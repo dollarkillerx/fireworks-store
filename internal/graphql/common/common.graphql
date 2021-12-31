@@ -1,0 +1,19 @@
+type Query {
+    healthcheck: String!
+    now: Timestamp!
+    # 获取用户的详细信息
+    user: UserInformation  @hasLogined()
+}
+
+type Mutation {
+    healthcheck: String!
+}
+
+directive @hasLoginedForWebsocket on FIELD_DEFINITION
+directive @hasLogined on FIELD_DEFINITION
+
+scalar Timestamp
+
+type UserInformation {
+    userID: String!
+}

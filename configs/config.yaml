@@ -1,0 +1,13 @@
+JWTConfig:
+  SecretKey: "SecretKey"
+  OperationKey: "OperationKey"
+
+LoggerConfig:
+  MaxSize: 200
+  MaxBackups: 3
+  Level: info
+
+EnablePlayground: true
+
+CORSAllowedOrigins:
+  - "*"
