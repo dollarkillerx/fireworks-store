@@ -1,9 +1,30 @@
 extend type Mutation {
-    # 创建账户
-    createUserAccount(email: String!, password: String!): AuthPayload
+    # 注册用户基础信息
+    basicRegistrationInformation(input: BasicInfo): Boolean @hasLogined()
+}
+
+extend type Query {
+    # 用户登陆
+    userLogin(token: String!): AuthPayload
+    # 位置列表 (经度, 纬度)
+    locationList(latitude: Int,longitude: Int): [LocationList!]!
+}
+
+input BasicInfo  {
+    nickName: String! # nickName
+    avatar: String!   # 头像
+    gps: [String!]!   # GPS信息  `[经度,纬度]`
+    phone: String!    # 电话号码
 }
 
 type AuthPayload {
-    accessTokenString: String!
+    accessTokenString: String! # token
+    needBasicInformation: Boolean! # 是否需要基础信息 (true 前端需要获取用户基础信息 并调用)
     id: String!
 }
+
+type LocationList {
+    id: String!    # 位置ID
+    name: String!  # 位置名称
+}
+

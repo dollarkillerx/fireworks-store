@@ -1,12 +1,12 @@
 type Query {
-    healthcheck: String!
+    healthCheck: String!
     now: Timestamp!
     # 获取用户的详细信息
     user: UserInformation  @hasLogined()
 }
 
 type Mutation {
-    healthcheck: String!
+    healthCheck: String!
 }
 
 directive @hasLoginedForWebsocket on FIELD_DEFINITION

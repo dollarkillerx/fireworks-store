@@ -8,8 +8,9 @@
 ## 外卖端-小程序
 
 #### 用户相关
-- 微信登陆
-- 用户定位
+- 微信登陆     `userLogin`
+- 注册基础信息  `basicRegistrationInformation`
+- 获取门店位置列表      `locationList`
 
 #### 首页
 - 店铺搜索
