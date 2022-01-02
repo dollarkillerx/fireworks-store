@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/dollarkillerx/urllib v1.13.16
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2
