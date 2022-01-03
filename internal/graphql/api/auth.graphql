@@ -1,13 +1,15 @@
 extend type Mutation {
     # 注册用户基础信息
     basicRegistrationInformation(input: BasicInfo): Boolean @hasLogined()
+    # 用户输入邀请码
+    registrationInvitationCode(invitationCode: String!): Boolean @hasLogined()
 }
 
 extend type Query {
-    # 用户登陆
-    userLogin(token: String!): AuthPayload
+    # 用户登陆 (WechatToken, 经度, 纬度)
+    userLogin(token: String!,latitude: Int!,longitude: Int!): AuthPayload
     # 位置列表 (经度, 纬度)
-    locationList(latitude: Int,longitude: Int): [LocationList!]!
+    locationList(latitude: Int!,longitude: Int!): [LocationList!]!
 }
 
 input BasicInfo  {

@@ -13,7 +13,10 @@ require (
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2
+	github.com/jinzhu/now v1.1.4 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.6.0
 	google.golang.org/protobuf v1.27.1
+	gorm.io/driver/postgres v1.2.3 // indirect
+	gorm.io/gorm v1.22.4 // indirect
 )
