@@ -9,6 +9,10 @@ type config struct {
 	JWTConfig          JWTConfiguration
 	Debug              bool
 	CORSAllowedOrigins []string
+
+	PostgresConfig  cfg.PostgresConfiguration
+	CreeperConfig   cfg.CreeperConfiguration
+	WarehouseConfig cfg.WarehouseConfiguration
 }
 
 type JWTConfiguration struct {
@@ -37,4 +41,16 @@ func GetJWTConfig() JWTConfiguration {
 
 func GetCORSAllowedOrigins() []string {
 	return conf.CORSAllowedOrigins
+}
+
+func GetPostgresConfig() cfg.PostgresConfiguration {
+	return conf.PostgresConfig
+}
+
+func GetCreeperConfig() cfg.CreeperConfiguration {
+	return conf.CreeperConfig
+}
+
+func GetWarehouseConfig() cfg.WarehouseConfiguration {
+	return conf.WarehouseConfig
 }

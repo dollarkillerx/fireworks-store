@@ -11,9 +11,10 @@ type IB struct {
 	ReferralCode string `gorm:"type:unique_index"` // 推荐码
 
 	// 返佣信息
-	Commission float64 // 佣金
-	Integral   float64 // 积分
-	Grade      string  // 代理等级
+	Commission     float64 // 佣金
+	PaidCommission float64 // 已支付佣金
+	Integral       float64 // 积分
+	Grade          string  // 代理等级
 
 	IBStateType IBStateType `gorm:"type:varchar(100);index"` // 账户状态
 }

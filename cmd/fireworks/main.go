@@ -4,6 +4,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/dollarkillerx/fireworks/internal/storage/basis"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -45,7 +47,20 @@ func main() {
 		panic(fmt.Errorf("error parsing config, %s", err))
 	}
 
+	// 初始化中间件
 	utils.InitLogger(config.GetLoggerConfig())
+	postgres, err := utils.InitPostgres(config.GetPostgresConfig())
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	storage, err := basis.New(postgres)
+	if err != nil {
+		log.Fatalln("Basis Storage 初始化失败: ", err)
+	}
+
+	storage = storage
+	// 初始化中间件 End
 
 	router := chi.NewRouter()
 
