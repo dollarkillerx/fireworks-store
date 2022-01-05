@@ -16,17 +16,17 @@ CORSAllowedOrigins:
   - "*"
 
 PostgresConfig:
-  Host: 192.168.88.99
+  Host: 127.0.0.1
   Port: 5432
   User: root
   Password: root
-  DBName: p_test
+  DBName: fireworks
 
 
 CreeperConfig:
   Uri: http://192.168.88.203:8745
 
 WarehouseConfig:
-  Uri: http://127.168.88.99:8187
+  Uri: http://127.0.0.1:8187
   AccessKey: access_key
   SecretKey: secret_key

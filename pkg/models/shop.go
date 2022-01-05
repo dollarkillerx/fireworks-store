@@ -1,5 +1,11 @@
 package models
 
+import (
+	"database/sql/driver"
+	"encoding/json"
+	"github.com/pkg/errors"
+)
+
 // Shop 商铺
 type Shop struct {
 	CommonModel
@@ -53,6 +59,22 @@ type Commodity struct {
 	NumberCopies float64 `gorm:"-"` // 购买份数  orm不生成
 }
 
+type Commodities []Commodity
+
+// Value Marshal
+func (a Commodities) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}
+
+// Scan Unmarshal
+func (a *Commodities) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+	return json.Unmarshal(b, &a)
+}
+
 // Order 订单
 type Order struct {
 	CommonModel
@@ -67,9 +89,9 @@ type Order struct {
 	TotalPoints    float64   // 总积分
 	TotalRebate    float64   // 总返佣
 
-	Local Local // 本次下单地址 （地址快照）
+	Local Local `gorm:"type:jsonb" json:"local"` // 本次下单地址 （地址快照）
 
-	Commodities []Commodity // 商品列表 （商品快照）
+	Commodities Commodities `gorm:"type:jsonb" json:"commodities"` // 商品列表 （商品快照）
 
 	Remark string `gorm:"type:varchar(360)"` // 订单备注
 

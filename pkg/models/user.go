@@ -1,14 +1,20 @@
 package models
 
+import (
+	"database/sql/driver"
+	"encoding/json"
+	"github.com/pkg/errors"
+)
+
 // User 用户信息
 type User struct {
 	CommonModel
-	WechatID             string  `gorm:"type:varchar(100);unique_index"` // 微信ID
-	Phone                string  `gorm:"type:varchar(100);index"`        // 手机号
-	NickName             string  `gorm:"type:varchar(360)"`              // 昵称
-	Avatar               string  `gorm:"type:varchar(360)"`              // 头像
-	IB                   string  `gorm:"type:varchar(100);index"`        // 代理商ID
-	DataCompletion       bool    `json:"data_completion"`                // 是否需要资料补全
+	WechatID             string  `gorm:"type:varchar(100);uniqueIndex"` // 微信ID
+	Phone                string  `gorm:"type:varchar(100);index"`       // 手机号
+	NickName             string  `gorm:"type:varchar(360)"`             // 昵称
+	Avatar               string  `gorm:"type:varchar(360)"`             // 头像
+	IB                   string  `gorm:"type:varchar(100);index"`       // 代理商ID
+	DataCompletion       bool    `json:"data_completion"`               // 是否需要资料补全
 	Integral             float64 // 积分
 	Consumption          float64 // 总消费
 	RegistryGPSLatitude  int64   //  gps 经度
@@ -26,4 +32,18 @@ type Local struct {
 	ContactPerson   string `gorm:"type:varchar(200)"`       // 联系人
 	ContactNumber   string `gorm:"type:varchar(200)"`       // 联系电话
 	Gender          bool   // 性别  true: man false: woman
+}
+
+// Value Marshal
+func (a Local) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}
+
+// Scan Unmarshal
+func (a *Local) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+	return json.Unmarshal(b, &a)
 }
