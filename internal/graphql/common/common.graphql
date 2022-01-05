@@ -17,3 +17,20 @@ scalar Timestamp
 type UserInformation {
     userID: String!
 }
+
+enum OrderType {
+    OrderTypeToBePaid, # 等待支付
+    OrderTypeCancelled,  # 取消
+    OrderTypePaymentSuccessful, # 支付成功
+}
+
+enum WithdrawType {
+    WithdrawTypeWait, # 等待处理
+    WithdrawTypeSuccess, # 成功
+    WithdrawTypeFail, # 失败
+}
+
+enum IBStateType {
+    IBStateTypeActivation  # 激活
+    IBStateTypeFreeze   # 冻结
+}

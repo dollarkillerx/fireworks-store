@@ -3,24 +3,24 @@ package middlewares
 import (
 	"context"
 	"fmt"
+	utils2 "github.com/dollarkillerx/fireworks/pkg/utils"
 	"runtime/debug"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/dollarkillerx/fireworks/utils"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 // ErrorPresenter ...
 func ErrorPresenter(ctx context.Context, e error) *gqlerror.Error {
-	utils.Logger.Errorf("[ReqID]:%s\n[Message]:%+v", utils.GetContextRequestID(ctx), e)
+	utils2.Logger.Errorf("[ReqID]:%s\n[Message]:%+v", utils2.GetContextRequestID(ctx), e)
 
 	return graphql.DefaultErrorPresenter(ctx, e)
 }
 
 // RecoverFunc ...
 func RecoverFunc(ctx context.Context, err interface{}) (userMessage error) {
-	utils.Logger.Errorf("[ReqID]:%s\n[Message]:%+v\n[Panic]:%s", utils.GetContextRequestID(ctx), err, string(debug.Stack()))
+	utils2.Logger.Errorf("[ReqID]:%s\n[Message]:%+v\n[Panic]:%s", utils2.GetContextRequestID(ctx), err, string(debug.Stack()))
 	return fmt.Errorf("panic: %+v", err)
 }
 
@@ -37,8 +37,8 @@ func ResponseLogger(ctx context.Context, next graphql.ResponseHandler) *graphql.
 		return res
 	}
 	receivedAt, _ := ctx.Value(requestReceivedAtCtxKey).(time.Time)
-	utils.Logger.Tracef("[ReqID]:%s\n[Duration]:%dms\n[Response]:%s",
-		utils.GetContextRequestID(ctx),
+	utils2.Logger.Tracef("[ReqID]:%s\n[Duration]:%dms\n[Response]:%s",
+		utils2.GetContextRequestID(ctx),
 		time.Since(receivedAt).Milliseconds(),
 		string(res.Data),
 	)
@@ -67,7 +67,7 @@ func (r *RequestLogger) MutateOperationParameters(ctx context.Context, request *
 		return nil
 	}
 	content := fmt.Sprintf("[ReqID]:%s\n[Query]:%s\n[OperationName]:%s",
-		utils.GetContextRequestID(ctx),
+		utils2.GetContextRequestID(ctx),
 		request.Query,
 		request.OperationName,
 	)
@@ -77,6 +77,6 @@ func (r *RequestLogger) MutateOperationParameters(ctx context.Context, request *
 	if len(request.Extensions) > 0 {
 		content = content + fmt.Sprintf("\n[Extensions]:%+v", request.Extensions)
 	}
-	utils.Logger.Traceln(content)
+	utils2.Logger.Traceln(content)
 	return nil
 }

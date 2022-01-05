@@ -7,7 +7,7 @@ fireworks 创世之徒  一切的起点
 - gorm.io/gorm                               ORM 
 - gorm.io/driver/postgres                    Pgsql
 - github.com/dollarkillerx/creeper           日志分析 & 搜索服务
-
+- https://github.com/mojocn/base64Captcha    验证码
 
 ## 路线图
 - 基础创建设计

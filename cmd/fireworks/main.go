@@ -19,7 +19,7 @@ import (
 	"github.com/dollarkillerx/fireworks/internal/generated"
 	"github.com/dollarkillerx/fireworks/internal/middlewares"
 	"github.com/dollarkillerx/fireworks/internal/resolvers"
-	"github.com/dollarkillerx/fireworks/utils"
+	"github.com/dollarkillerx/fireworks/pkg/utils"
 	"github.com/go-chi/chi"
 	"github.com/gorilla/websocket"
 )

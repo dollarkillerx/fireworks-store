@@ -18,6 +18,10 @@ func (r *mutationResolver) BasicRegistrationInformation(ctx context.Context, inp
 	panic("not implemented")
 }
 
+func (r *mutationResolver) RegistrationInvitationCode(ctx context.Context, invitationCode string) (*bool, error) {
+	panic("not implemented")
+}
+
 func (r *queryResolver) HealthCheck(ctx context.Context) (string, error) {
 	panic("not implemented")
 }
@@ -30,11 +34,11 @@ func (r *queryResolver) User(ctx context.Context) (*UserInformation, error) {
 	panic("not implemented")
 }
 
-func (r *queryResolver) UserLogin(ctx context.Context, token string) (*AuthPayload, error) {
+func (r *queryResolver) UserLogin(ctx context.Context, token string, latitude int, longitude int) (*AuthPayload, error) {
 	panic("not implemented")
 }
 
-func (r *queryResolver) LocationList(ctx context.Context, latitude *int, longitude *int) ([]LocationList, error) {
+func (r *queryResolver) LocationList(ctx context.Context, latitude int, longitude int) ([]LocationList, error) {
 	panic("not implemented")
 }
 

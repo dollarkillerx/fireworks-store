@@ -61,14 +61,15 @@ type ComplexityRoot struct {
 	Mutation struct {
 		BasicRegistrationInformation func(childComplexity int, input *BasicInfo) int
 		HealthCheck                  func(childComplexity int) int
+		RegistrationInvitationCode   func(childComplexity int, invitationCode string) int
 	}
 
 	Query struct {
 		HealthCheck  func(childComplexity int) int
-		LocationList func(childComplexity int, latitude *int, longitude *int) int
+		LocationList func(childComplexity int, latitude int, longitude int) int
 		Now          func(childComplexity int) int
 		User         func(childComplexity int) int
-		UserLogin    func(childComplexity int, token string) int
+		UserLogin    func(childComplexity int, token string, latitude int, longitude int) int
 	}
 
 	UserInformation struct {
@@ -79,13 +80,14 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	HealthCheck(ctx context.Context) (string, error)
 	BasicRegistrationInformation(ctx context.Context, input *BasicInfo) (*bool, error)
+	RegistrationInvitationCode(ctx context.Context, invitationCode string) (*bool, error)
 }
 type QueryResolver interface {
 	HealthCheck(ctx context.Context) (string, error)
 	Now(ctx context.Context) (*timestamppb.Timestamp, error)
 	User(ctx context.Context) (*UserInformation, error)
-	UserLogin(ctx context.Context, token string) (*AuthPayload, error)
-	LocationList(ctx context.Context, latitude *int, longitude *int) ([]LocationList, error)
+	UserLogin(ctx context.Context, token string, latitude int, longitude int) (*AuthPayload, error)
+	LocationList(ctx context.Context, latitude int, longitude int) ([]LocationList, error)
 }
 
 type executableSchema struct {
@@ -157,6 +159,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.HealthCheck(childComplexity), true
 
+	case "Mutation.registrationInvitationCode":
+		if e.complexity.Mutation.RegistrationInvitationCode == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_registrationInvitationCode_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RegistrationInvitationCode(childComplexity, args["invitationCode"].(string)), true
+
 	case "Query.healthCheck":
 		if e.complexity.Query.HealthCheck == nil {
 			break
@@ -174,7 +188,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.LocationList(childComplexity, args["latitude"].(*int), args["longitude"].(*int)), true
+		return e.complexity.Query.LocationList(childComplexity, args["latitude"].(int), args["longitude"].(int)), true
 
 	case "Query.now":
 		if e.complexity.Query.Now == nil {
@@ -200,7 +214,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.UserLogin(childComplexity, args["token"].(string)), true
+		return e.complexity.Query.UserLogin(childComplexity, args["token"].(string), args["latitude"].(int), args["longitude"].(int)), true
 
 	case "UserInformation.userID":
 		if e.complexity.UserInformation.UserID == nil {
@@ -276,13 +290,15 @@ var sources = []*ast.Source{
 	{Name: "internal/graphql/api/auth.graphql", Input: `extend type Mutation {
     # 注册用户基础信息
     basicRegistrationInformation(input: BasicInfo): Boolean @hasLogined()
+    # 用户输入邀请码
+    registrationInvitationCode(invitationCode: String!): Boolean @hasLogined()
 }
 
 extend type Query {
-    # 用户登陆
-    userLogin(token: String!): AuthPayload
+    # 用户登陆 (WechatToken, 经度, 纬度)
+    userLogin(token: String!,latitude: Int!,longitude: Int!): AuthPayload
     # 位置列表 (经度, 纬度)
-    locationList(latitude: Int,longitude: Int): [LocationList!]!
+    locationList(latitude: Int!,longitude: Int!): [LocationList!]!
 }
 
 input BasicInfo  {
@@ -323,6 +339,23 @@ scalar Timestamp
 type UserInformation {
     userID: String!
 }
+
+enum OrderType {
+    OrderTypeToBePaid, # 等待支付
+    OrderTypeCancelled,  # 取消
+    OrderTypePaymentSuccessful, # 支付成功
+}
+
+enum WithdrawType {
+    WithdrawTypeWait, # 等待处理
+    WithdrawTypeSuccess, # 成功
+    WithdrawTypeFail, # 失败
+}
+
+enum IBStateType {
+    IBStateTypeActivation  # 激活
+    IBStateTypeFreeze   # 冻结
+}
 `, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -346,6 +379,21 @@ func (ec *executionContext) field_Mutation_basicRegistrationInformation_args(ctx
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_registrationInvitationCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["invitationCode"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("invitationCode"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["invitationCode"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -364,19 +412,19 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_locationList_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *int
+	var arg0 int
 	if tmp, ok := rawArgs["latitude"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("latitude"))
-		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["latitude"] = arg0
-	var arg1 *int
+	var arg1 int
 	if tmp, ok := rawArgs["longitude"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("longitude"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -397,6 +445,24 @@ func (ec *executionContext) field_Query_userLogin_args(ctx context.Context, rawA
 		}
 	}
 	args["token"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["latitude"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("latitude"))
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["latitude"] = arg1
+	var arg2 int
+	if tmp, ok := rawArgs["longitude"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("longitude"))
+		arg2, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["longitude"] = arg2
 	return args, nil
 }
 
@@ -707,6 +773,65 @@ func (ec *executionContext) _Mutation_basicRegistrationInformation(ctx context.C
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_registrationInvitationCode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_registrationInvitationCode_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().RegistrationInvitationCode(rctx, args["invitationCode"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.HasLogined == nil {
+				return nil, errors.New("directive hasLogined is not implemented")
+			}
+			return ec.directives.HasLogined(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_healthCheck(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -854,7 +979,7 @@ func (ec *executionContext) _Query_userLogin(ctx context.Context, field graphql.
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().UserLogin(rctx, args["token"].(string))
+		return ec.resolvers.Query().UserLogin(rctx, args["token"].(string), args["latitude"].(int), args["longitude"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -893,7 +1018,7 @@ func (ec *executionContext) _Query_locationList(ctx context.Context, field graph
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().LocationList(rctx, args["latitude"].(*int), args["longitude"].(*int))
+		return ec.resolvers.Query().LocationList(rctx, args["latitude"].(int), args["longitude"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2321,6 +2446,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
 
+		case "registrationInvitationCode":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_registrationInvitationCode(ctx, field)
+			}
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
+
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2940,6 +3072,21 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) marshalNLocationList2githubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐLocationList(ctx context.Context, sel ast.SelectionSet, v LocationList) graphql.Marshaler {
 	return ec._LocationList(ctx, sel, &v)
 }
@@ -3362,22 +3509,6 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	res := graphql.MarshalBoolean(*v)
-	return res
-}
-
-func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := graphql.UnmarshalInt(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	res := graphql.MarshalInt(*v)
 	return res
 }
 
