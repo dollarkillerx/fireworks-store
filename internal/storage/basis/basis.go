@@ -27,6 +27,7 @@ func (s *Storage) migrate() error {
 		&models.IBWithdraw{},
 
 		&models.Other{},
+		&models.Area{},
 
 		&models.Shop{},
 		&models.Categories{},

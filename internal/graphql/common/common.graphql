@@ -34,3 +34,8 @@ enum IBStateType {
     IBStateTypeActivation  # 激活
     IBStateTypeFreeze   # 冻结
 }
+
+input Pagination {
+    offset: Int!
+    limit: Int!
+}

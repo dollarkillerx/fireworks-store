@@ -1,0 +1,48 @@
+extend type Query {
+    # 获取最近门店 (片区ID，是否按照评排名)
+    shopList(areaId: String!, sales: Boolean,pagination: Pagination!): ShopList!
+    # 门店搜索  max: 100
+    searchShop(keyword: String!): ShopList! @hasLogined
+    # 商品list commodity (门店ID, 买过的)
+    commodityList(shopId: String!,bought: Boolean, pagination: Pagination!): CommodityList! @hasLogined
+    # 商品搜索 max: 100
+    searchCommodityList(keyword: String!, shopId: String!): CommodityList! @hasLogined
+    # 下单
+    placeOrder(commodityID: [String!]!): PlaceOrder! @hasLogined
+}
+
+type PlaceOrder {
+    token: String!
+}
+
+type Shop {
+    id: String!
+    name: String!
+    logoUri: String!
+    address: String!
+    announcement: String!
+    score: String!
+    startDelivery: Float!
+}
+
+type ShopList {
+    Total: Int!
+    Nodes: [Shop!]!
+}
+
+type Commodity {
+    id: String!
+    name: String!
+    unitPrice: Float!
+    weights: Float!
+    inventory: Int!
+    picture: String!
+    describe: String!
+    integral: Float!
+}
+
+type CommodityList {
+    Total: Int!
+    Nodes: [Commodity!]!
+    startDelivery: Float! # 启送价格
+}

@@ -287,7 +287,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "internal/graphql/api/auth.graphql", Input: `extend type Mutation {
+	{Name: "internal/graphql/applets/auth.graphql", Input: `extend type Mutation {
     # 注册用户基础信息
     basicRegistrationInformation(input: BasicInfo): Boolean @hasLogined()
     # 用户输入邀请码
