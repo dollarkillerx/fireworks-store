@@ -10,7 +10,7 @@ fireworks 创世之徒 一切的起点
 - gorm.io/gorm                               ORM 
 - gorm.io/driver/postgres                    Pgsql
 - github.com/dollarkillerx/creeper           日志分析 & 搜索服务
-- https://github.com/mojocn/base64Captcha    验证码
+- https://github.com/mojocn/base64Captcha | github.com/afocus/captcha    验证码
 - https://github.com/dollarkillerx/warehouse 文件存储
 ```
 
@@ -22,3 +22,14 @@ fireworks 创世之徒 一切的起点
 - [ ] API 设计
 - [x] 数据库设计
 - [ ] 风控系统设计
+
+## TODO
+
+- [x] base64Captcha 调研 当前采用 afocus/captcha
+
+### 当前风控方案:
+
+- 未支付订单过期时间:  2分钟
+- 当个账户最多一个未支付订单 `创建新订单时 自动关闭上一个未支付订单`
+- 10 分钟内出现3次订单未支付 锁账户 30分钟
+

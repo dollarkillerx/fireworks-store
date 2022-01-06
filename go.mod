@@ -9,8 +9,10 @@ require (
 )
 
 require (
+	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868 // indirect
 	github.com/dollarkillerx/urllib v1.13.16
 	github.com/go-chi/chi v4.1.2+incompatible
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2
 	github.com/jinzhu/now v1.1.4 // indirect
