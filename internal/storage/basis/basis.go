@@ -35,6 +35,6 @@ func (s *Storage) migrate() error {
 		&models.Order{},
 
 		&models.User{},
-		&models.Local{},
+		&models.ShippingAddress{},
 	)
 }

@@ -3,4 +3,38 @@ extend type Mutation {
     basicRegistrationInformation(input: BasicInfo): Boolean @hasLogined
     # 用户输入邀请码
     registrationInvitationCode(invitationCode: String!): Boolean @hasLogined
+
+    # 位置信息
+    # 添加位置
+    createShippingAddress(input: CreateShippingAddress!): Boolean @hasLogined
+    # 删除一个位置
+    removeShippingAddress(id: String!): Boolean @hasLogined
+}
+
+input CreateShippingAddress {
+    school: String!
+    shippingAddress: String!
+    contactPerson: String!
+    contactNumber: String!
+    gender: Boolean!  # true man false woman
+}
+
+extend type Query  {
+    # 位置信息
+    # 获取我的位置信息
+    shippingAddress: ShippingAddressList! @hasLogined
+}
+
+type ShippingAddressList {
+    total: Int!
+    shippingAddress: [ShippingAddress!]!
+}
+
+type ShippingAddress {
+    id: String!
+    school: String!
+    shippingAddress: String!
+    contactPerson: String!
+    contactNumber: String!
+    gender: Boolean!  # true man false woman
 }

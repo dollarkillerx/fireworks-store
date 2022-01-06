@@ -24,24 +24,25 @@ type User struct {
 	LastGPSLongitude     int64   // 最后登陆gpc 纬度
 }
 
-// Local 用户地址地址
-type Local struct {
+// ShippingAddress 用户地址地址
+type ShippingAddress struct {
 	CommonModel
 	UserID          string `gorm:"type:varchar(360);index"` // 用户ID
+	School          string `gorm:"type:varchar(360);index"` // 学校区域
 	ShippingAddress string `gorm:"type:varchar(360)"`       // 收货地址
-	HouseNumber     string `gorm:"type:varchar(360)"`       // 门牌号
 	ContactPerson   string `gorm:"type:varchar(200)"`       // 联系人
 	ContactNumber   string `gorm:"type:varchar(200)"`       // 联系电话
 	Gender          bool   // 性别  true: man false: woman
+	//HouseNumber     string `gorm:"type:varchar(360)"`       // 门牌号
 }
 
 // Value Marshal
-func (a Local) Value() (driver.Value, error) {
+func (a ShippingAddress) Value() (driver.Value, error) {
 	return json.Marshal(a)
 }
 
 // Scan Unmarshal
-func (a *Local) Scan(value interface{}) error {
+func (a *ShippingAddress) Scan(value interface{}) error {
 	b, ok := value.([]byte)
 	if !ok {
 		return errors.New("type assertion to []byte failed")

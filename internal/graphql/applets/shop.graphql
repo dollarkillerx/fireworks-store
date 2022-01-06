@@ -7,8 +7,35 @@ extend type Query {
     commodityList(shopId: String!,bought: Boolean, pagination: Pagination!): CommodityList! @hasLogined
     # 商品搜索 max: 100
     searchCommodityList(keyword: String!, shopId: String!): CommodityList! @hasLogined
+    # 订单详情
+    order(id: String!): Order @hasLogined
+    # 历史订单
+    historyOrder(pagination: Pagination!): HistoryOrder @hasLogined
+}
+
+extend type Mutation {
     # 下单
-    placeOrder(commodityID: [String!]!): PlaceOrder! @hasLogined
+    placeOrder(commodityID: [String!]!, shippingAddressID: String!): PlaceOrder! @hasLogined
+}
+
+type HistoryOrder {
+    total: Int!
+    orders: [Order!]!
+}
+
+type Order {
+    id: String!
+    shopLogo: String! # 店铺logo
+    shopName: String! # 商店名称
+    shopID: String! # 商店ID
+    totalPrice: Float! # 总价
+    freight: Float! # 运费
+    orderType: OrderType! # 支付状态
+    remark: String! # 备注
+    commodities: [Commodity!]! # 具体商品
+    createdAt: Int! # 创建时间
+    contactPerson: String! # 联系人
+    deliveryAddress: String! # 配送地址
 }
 
 type PlaceOrder {
@@ -39,6 +66,8 @@ type Commodity {
     picture: String!
     describe: String!
     integral: Float!
+
+    numberCopies: Float!
 }
 
 type CommodityList {

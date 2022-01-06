@@ -90,7 +90,7 @@ type Order struct {
 	TotalPoints    float64   // 总积分
 	TotalRebate    float64   // 总返佣
 
-	Local Local `gorm:"type:jsonb" json:"local"` // 本次下单地址 （地址快照）
+	ShippingAddress ShippingAddress `gorm:"type:jsonb" json:"shippingAddress"` // 本次下单地址 （地址快照）
 
 	Commodities Commodities `gorm:"type:jsonb" json:"commodities"` // 商品列表 （商品快照）
 
