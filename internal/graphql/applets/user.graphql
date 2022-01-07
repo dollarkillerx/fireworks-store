@@ -32,9 +32,9 @@ type ShippingAddressList {
 
 type ShippingAddress {
     id: String!
-    school: String!
-    shippingAddress: String!
-    contactPerson: String!
-    contactNumber: String!
+    school: String!  # 所属学校
+    shippingAddress: String! # 收件地址
+    contactPerson: String! #　联络人
+    contactNumber: String! # 联系电话
     gender: Boolean!  # true man false woman
 }

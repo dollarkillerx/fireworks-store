@@ -25,6 +25,8 @@ type Shop struct {
 	Account  string `gorm:"type:varchar(360);index"` // 账户
 	Password string `gorm:"type:varchar(360);index"` // 密码
 
+	Activation bool `gorm:"index"` // 激活
+
 	Admin bool `gorm:"index"` // is admin
 }
 
@@ -56,6 +58,9 @@ type Commodity struct {
 	RebateLeve1 float64 // 青铜代理 返佣
 	RebateLeve2 float64 // 白银代理 返佣
 	RebateLeve3 float64 // 黄金代理 返佣
+
+	RegionalRestrictions bool `gorm:"index"` // 地区限制
+	Activation           bool `gorm:"index"` // 激活
 
 	NumberCopies float64 `gorm:"-"` // 购买份数  orm不生成
 }

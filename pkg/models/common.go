@@ -16,66 +16,64 @@ type CommonModel struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
-type OrderType string
+type IBStateType string
 
 const (
-	OrderTypeOrderTypeToBePaid          OrderType = "OrderTypeToBePaid"
-	OrderTypeOrderTypeCancelled         OrderType = "OrderTypeCancelled"
-	OrderTypeOrderTypePaymentSuccessful OrderType = "OrderTypePaymentSuccessful"
+	IBStateTypeActivation IBStateType = "Activation"
+	IBStateTypeFreeze     IBStateType = "Freeze"
 )
 
-var AllOrderType = []OrderType{
-	OrderTypeOrderTypeToBePaid,
-	OrderTypeOrderTypeCancelled,
-	OrderTypeOrderTypePaymentSuccessful,
+var AllIBStateType = []IBStateType{
+	IBStateTypeActivation,
+	IBStateTypeFreeze,
 }
 
-func (e OrderType) IsValid() bool {
+func (e IBStateType) IsValid() bool {
 	switch e {
-	case OrderTypeOrderTypeToBePaid, OrderTypeOrderTypeCancelled, OrderTypeOrderTypePaymentSuccessful:
+	case IBStateTypeActivation, IBStateTypeFreeze:
 		return true
 	}
 	return false
 }
 
-func (e OrderType) String() string {
+func (e IBStateType) String() string {
 	return string(e)
 }
 
-func (e *OrderType) UnmarshalGQL(v interface{}) error {
+func (e *IBStateType) UnmarshalGQL(v interface{}) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
 	}
 
-	*e = OrderType(str)
+	*e = IBStateType(str)
 	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid OrderType", str)
+		return fmt.Errorf("%s is not a valid IBStateType", str)
 	}
 	return nil
 }
 
-func (e OrderType) MarshalGQL(w io.Writer) {
+func (e IBStateType) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type WithdrawType string
 
 const (
-	WithdrawTypeWithdrawTypeWait    WithdrawType = "WithdrawTypeWait"
-	WithdrawTypeWithdrawTypeSuccess WithdrawType = "WithdrawTypeSuccess"
-	WithdrawTypeWithdrawTypeFail    WithdrawType = "WithdrawTypeFail"
+	WithdrawTypeWait    WithdrawType = "Wait"
+	WithdrawTypeSuccess WithdrawType = "Success"
+	WithdrawTypeFail    WithdrawType = "Fail"
 )
 
 var AllWithdrawType = []WithdrawType{
-	WithdrawTypeWithdrawTypeWait,
-	WithdrawTypeWithdrawTypeSuccess,
-	WithdrawTypeWithdrawTypeFail,
+	WithdrawTypeWait,
+	WithdrawTypeSuccess,
+	WithdrawTypeFail,
 }
 
 func (e WithdrawType) IsValid() bool {
 	switch e {
-	case WithdrawTypeWithdrawTypeWait, WithdrawTypeWithdrawTypeSuccess, WithdrawTypeWithdrawTypeFail:
+	case WithdrawTypeWait, WithdrawTypeSuccess, WithdrawTypeFail:
 		return true
 	}
 	return false
@@ -102,43 +100,88 @@ func (e WithdrawType) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
-type IBStateType string
+type OrderType string
 
 const (
-	IBStateTypeIBStateTypeActivation IBStateType = "IBStateTypeActivation"
-	IBStateTypeIBStateTypeFreeze     IBStateType = "IBStateTypeFreeze"
+	OrderTypeToBePaid          OrderType = "ToBePaid"
+	OrderTypeCancelled         OrderType = "Cancelled"
+	OrderTypePaymentSuccessful OrderType = "PaymentSuccessful"
 )
 
-var AllIBStateType = []IBStateType{
-	IBStateTypeIBStateTypeActivation,
-	IBStateTypeIBStateTypeFreeze,
+var AllOrderType = []OrderType{
+	OrderTypeToBePaid,
+	OrderTypeCancelled,
+	OrderTypePaymentSuccessful,
 }
 
-func (e IBStateType) IsValid() bool {
+func (e OrderType) IsValid() bool {
 	switch e {
-	case IBStateTypeIBStateTypeActivation, IBStateTypeIBStateTypeFreeze:
+	case OrderTypeToBePaid, OrderTypeCancelled, OrderTypePaymentSuccessful:
 		return true
 	}
 	return false
 }
 
-func (e IBStateType) String() string {
+func (e OrderType) String() string {
 	return string(e)
 }
 
-func (e *IBStateType) UnmarshalGQL(v interface{}) error {
+func (e *OrderType) UnmarshalGQL(v interface{}) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
 	}
 
-	*e = IBStateType(str)
+	*e = OrderType(str)
 	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid IBStateType", str)
+		return fmt.Errorf("%s is not a valid OrderType", str)
 	}
 	return nil
 }
 
-func (e IBStateType) MarshalGQL(w io.Writer) {
+func (e OrderType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type IBGrade string
+
+const (
+	IBGradeBronze IBGrade = "Bronze"
+	IBGradeSilver IBGrade = "Silver"
+	IBGradeGold   IBGrade = "Gold"
+)
+
+var AllIBGrade = []IBGrade{
+	IBGradeBronze,
+	IBGradeSilver,
+	IBGradeGold,
+}
+
+func (e IBGrade) IsValid() bool {
+	switch e {
+	case IBGradeBronze, IBGradeSilver, IBGradeGold:
+		return true
+	}
+	return false
+}
+
+func (e IBGrade) String() string {
+	return string(e)
+}
+
+func (e *IBGrade) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = IBGrade(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid IBGrade", str)
+	}
+	return nil
+}
+
+func (e IBGrade) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }

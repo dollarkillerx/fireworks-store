@@ -46,15 +46,15 @@ models:
   StringMap:
     model:
       - github.com/dollarkillerx/common/pkg/gql.StringMap
-  OrderType:
-    model:
-      - github.com/dollarkillerx/fireworks/pkg/models/common.OrderType
-  WithdrawType:
-    model:
-      - github.com/dollarkillerx/fireworks/pkg/models/common.WithdrawType
+#  WithdrawType:
+#    model:
+#      - github.com/dollarkillerx/fireworks/pkg/models/common.WithdrawType
   IBStateType:
     model:
       - github.com/dollarkillerx/fireworks/pkg/models/common.IBStateType
+#  OrderType:
+#    model:
+#      - github.com/dollarkillerx/fireworks/pkg/models/common.OrderType
 
 # Other configs
 omit_slice_element_pointers: true

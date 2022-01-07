@@ -2,7 +2,7 @@ type Query {
     healthCheck: String!
     now: Timestamp!
     # 获取用户的详细信息
-    user: UserInformation  @hasLogined()
+    user: UserInformation  @hasLogined
 }
 
 type Mutation {
@@ -19,20 +19,26 @@ type UserInformation {
 }
 
 enum OrderType {
-    OrderTypeToBePaid, # 等待支付
-    OrderTypeCancelled,  # 取消
-    OrderTypePaymentSuccessful, # 支付成功
+    ToBePaid, # 等待支付
+    Cancelled,  # 取消
+    PaymentSuccessful, # 支付成功
 }
 
 enum WithdrawType {
-    WithdrawTypeWait, # 等待处理
-    WithdrawTypeSuccess, # 成功
-    WithdrawTypeFail, # 失败
+    Wait, # 等待处理
+    Success, # 成功
+    Fail, # 失败
 }
 
 enum IBStateType {
-    IBStateTypeActivation  # 激活
-    IBStateTypeFreeze   # 冻结
+    Activation  # 激活
+    Freeze   # 冻结
+}
+
+enum IBGrade {
+    Bronze  # 青铜代理
+    Silver  # 白银代理
+    Gold    # 黄金代理
 }
 
 input Pagination {

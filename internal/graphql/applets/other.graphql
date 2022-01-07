@@ -1,0 +1,9 @@
+extend type Mutation {
+    captchaImg: Captcha! #　生成Img验证码
+    captchaPhone(phone: String!): Captcha! # 生成phone 验证码
+}
+
+type Captcha {
+    img: String! # base64 img
+    captchaToken: String! # captcha token
+}

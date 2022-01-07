@@ -14,7 +14,7 @@ type IB struct {
 	Commission     float64 // 佣金
 	PaidCommission float64 // 已支付佣金
 	Integral       float64 // 积分
-	Grade          string  // 代理等级
+	Grade          IBGrade `gorm:"type:varchar(100);index"` // 代理等级
 
 	IBStateType IBStateType `gorm:"type:varchar(100);index"` // 账户状态
 }

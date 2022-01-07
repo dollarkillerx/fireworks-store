@@ -3,10 +3,8 @@ extend type Query {
     shopList(areaId: String!, sales: Boolean,pagination: Pagination!): ShopList!
     # 门店搜索  max: 100
     searchShop(keyword: String!): ShopList! @hasLogined
-    # 商品list commodity (门店ID, 买过的)
-    commodityList(shopId: String!,bought: Boolean, pagination: Pagination!): CommodityList! @hasLogined
-    # 商品搜索 max: 100
-    searchCommodityList(keyword: String!, shopId: String!): CommodityList! @hasLogined
+    # 商品list commodity (商品名称[为空则展示全部], 门店ID, 买过的)
+    commodityList(keyword: String, shopId: String!,bought: Boolean, pagination: Pagination!): CommodityList! @hasLogined
     # 订单详情
     order(id: String!): Order @hasLogined
     # 历史订单
@@ -39,17 +37,17 @@ type Order {
 }
 
 type PlaceOrder {
-    token: String!
+    token: String!  # 付款token
 }
 
 type Shop {
     id: String!
     name: String!
     logoUri: String!
-    address: String!
-    announcement: String!
-    score: String!
-    startDelivery: Float!
+    address: String!  # 具体地址
+    announcement: String! # 公告
+    score: String!   # 评分
+    startDelivery: Float!  # 起送价格
 }
 
 type ShopList {
@@ -60,14 +58,21 @@ type ShopList {
 type Commodity {
     id: String!
     name: String!
-    unitPrice: Float!
-    weights: Float!
-    inventory: Int!
-    picture: String!
-    describe: String!
-    integral: Float!
+    unitPrice: Float! # 单价
+    weights: Float! # 权重
+    inventory: Int!  # 库存
+    picture: String!  # 图片地址
+    describe: String! # 注释
+    integral: Float!  # 积分
+    ibIntegral: Float! # ib 积分
+    rebateLeve1: Float! # 青铜代理 返佣
+    rebateLeve2: Float! # 白银代理 返佣
+    rebateLeve3: Float! # 黄金代理 返佣
 
-    numberCopies: Float!
+    regional_restrictions: Boolean! # 地区限制
+    activation: Boolean! # 激活
+
+    numberCopies: Float!  # 份数
 }
 
 type CommodityList {
