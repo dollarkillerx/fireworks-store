@@ -2,7 +2,7 @@ extend type Query {
     # 后台登录
     bdLogin(account: String!, password: String!, captcha: String!,captchaToken: String!): AuthPayload!
     # 大屏
-    bdBigScreen: [BigScreen!]! @hasLogined
+#    bdBigScreen: [BigScreen!]! @hasLogined
     # 商品列表 (keyword[可选], 分页)
     bdCommodity(keyword: String,pagination: Pagination!): CommodityList! @hasLogined
     # 商品详情
@@ -15,11 +15,11 @@ extend type Mutation {
     updateProduct(input: UpdateCommodity!): Boolean! @hasLogined
 }
 
-type BigScreen {
-    prefix: String! # 前缀
-    suffix: String! # 后缀
-    value: String!  # 值
-}
+#type BigScreen {
+#    prefix: String! # 前缀
+#    suffix: String! # 后缀
+#    value: String!  # 值
+#}
 
 input CreateCommodity {
     name: String!     # 商品名称
