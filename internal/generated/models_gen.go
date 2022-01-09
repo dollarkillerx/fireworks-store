@@ -241,7 +241,7 @@ type Shop struct {
 	LogoURI       string  `json:"logoUri"`
 	Address       string  `json:"address"`
 	Announcement  string  `json:"announcement"`
-	Score         string  `json:"score"`
+	Score         float64 `json:"score"`
 	StartDelivery float64 `json:"startDelivery"`
 }
 
