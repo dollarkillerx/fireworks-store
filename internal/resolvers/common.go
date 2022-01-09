@@ -128,7 +128,7 @@ func (q *queryResolver) UserFlow(ctx context.Context, startTime int, endTime int
 	panic("implement me")
 }
 
-func (q *queryResolver) ShopList(ctx context.Context, areaID string, sales *bool, pagination generated.Pagination) (*generated.ShopList, error) {
+func (q *queryResolver) ShopList(ctx context.Context, areaID string, sales bool, pagination generated.Pagination) (*generated.ShopList, error) {
 	panic("implement me")
 }
 
@@ -136,7 +136,7 @@ func (q *queryResolver) SearchShop(ctx context.Context, keyword string) (*genera
 	panic("implement me")
 }
 
-func (q *queryResolver) CommodityList(ctx context.Context, keyword *string, shopID string, bought *bool, pagination generated.Pagination) (*generated.CommodityList, error) {
+func (q *queryResolver) CommodityList(ctx context.Context, keyword *string, shopID string, bought bool, pagination generated.Pagination) (*generated.CommodityList, error) {
 	panic("implement me")
 }
 

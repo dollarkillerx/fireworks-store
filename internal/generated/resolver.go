@@ -114,7 +114,7 @@ func (r *queryResolver) UserFlow(ctx context.Context, startTime int, endTime int
 	panic("not implemented")
 }
 
-func (r *queryResolver) ShopList(ctx context.Context, areaID string, sales *bool, pagination Pagination) (*ShopList, error) {
+func (r *queryResolver) ShopList(ctx context.Context, areaID string, sales bool, pagination Pagination) (*ShopList, error) {
 	panic("not implemented")
 }
 
@@ -122,7 +122,7 @@ func (r *queryResolver) SearchShop(ctx context.Context, keyword string) (*ShopLi
 	panic("not implemented")
 }
 
-func (r *queryResolver) CommodityList(ctx context.Context, keyword *string, shopID string, bought *bool, pagination Pagination) (*CommodityList, error) {
+func (r *queryResolver) CommodityList(ctx context.Context, keyword *string, shopID string, bought bool, pagination Pagination) (*CommodityList, error) {
 	panic("not implemented")
 }
 
