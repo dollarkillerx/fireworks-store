@@ -99,3 +99,7 @@ func TestAddShop(t *testing.T) {
 	})
 
 }
+
+func TestGetShopList(t *testing.T) {
+
+}
