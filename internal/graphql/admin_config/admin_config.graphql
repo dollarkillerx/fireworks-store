@@ -1,7 +1,3 @@
-extend type Query {
-
-}
-
 type Page {
     id: String! # id
     name: String! # name

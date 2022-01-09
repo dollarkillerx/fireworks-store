@@ -14,6 +14,14 @@ func (r *mutationResolver) HealthCheck(ctx context.Context) (string, error) {
 	panic("not implemented")
 }
 
+func (r *mutationResolver) CreateCommodity(ctx context.Context, input CreateCommodity) (bool, error) {
+	panic("not implemented")
+}
+
+func (r *mutationResolver) UpdateProduct(ctx context.Context, input UpdateCommodity) (bool, error) {
+	panic("not implemented")
+}
+
 func (r *mutationResolver) IbRegistry(ctx context.Context, input IbRegistry) (*AuthPayload, error) {
 	panic("not implemented")
 }
@@ -67,6 +75,18 @@ func (r *queryResolver) UserLogin(ctx context.Context, token string, latitude in
 }
 
 func (r *queryResolver) AreaList(ctx context.Context, latitude int, longitude int) ([]AreaList, error) {
+	panic("not implemented")
+}
+
+func (r *queryResolver) BdLogin(ctx context.Context, account string, password string, captcha string, captchaToken string) (*AuthPayload, error) {
+	panic("not implemented")
+}
+
+func (r *queryResolver) BdCommodity(ctx context.Context, keyword *string, pagination Pagination) (*CommodityList, error) {
+	panic("not implemented")
+}
+
+func (r *queryResolver) BdProductDetails(ctx context.Context, commodityID string) (*Commodity, error) {
 	panic("not implemented")
 }
 

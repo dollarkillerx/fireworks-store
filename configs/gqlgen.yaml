@@ -49,9 +49,9 @@ models:
 #  WithdrawType:
 #    model:
 #      - github.com/dollarkillerx/fireworks/pkg/models/common.WithdrawType
-  IBStateType:
-    model:
-      - github.com/dollarkillerx/fireworks/pkg/models/common.IBStateType
+#  IBStateType:
+#    model:
+#      - github.com/dollarkillerx/fireworks/pkg/models/common.IBStateType
 #  OrderType:
 #    model:
 #      - github.com/dollarkillerx/fireworks/pkg/models/common.OrderType
