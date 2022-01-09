@@ -214,7 +214,7 @@ type ComplexityRoot struct {
 		BdCommodity       func(childComplexity int, keyword *string, pagination Pagination) int
 		BdLogin           func(childComplexity int, account string, password string, captcha string, captchaToken string) int
 		BdProductDetails  func(childComplexity int, commodityID string) int
-		CommodityList     func(childComplexity int, keyword *string, shopID string, bought *bool, pagination Pagination) int
+		CommodityList     func(childComplexity int, keyword *string, shopID string, bought bool, pagination Pagination) int
 		HealthCheck       func(childComplexity int) int
 		HistoryOrder      func(childComplexity int, pagination Pagination) int
 		IbLogin           func(childComplexity int, account string, password string, captcha string, captchaToken string) int
@@ -226,7 +226,7 @@ type ComplexityRoot struct {
 		RebateMerchandise func(childComplexity int, keyword *string, pagination Pagination) int
 		SearchShop        func(childComplexity int, keyword string) int
 		ShippingAddress   func(childComplexity int) int
-		ShopList          func(childComplexity int, areaID string, sales *bool, pagination Pagination) int
+		ShopList          func(childComplexity int, areaID string, sales bool, pagination Pagination) int
 		User              func(childComplexity int) int
 		UserFlow          func(childComplexity int, startTime int, endTime int, pagination Pagination) int
 		UserLogin         func(childComplexity int, token string, latitude int, longitude int) int
@@ -370,9 +370,9 @@ type QueryResolver interface {
 	MyIb(ctx context.Context) (*MyIb, error)
 	RebateFlow(ctx context.Context, startTime int, endTime int, pagination Pagination) (*RebateFlow, error)
 	UserFlow(ctx context.Context, startTime int, endTime int, pagination Pagination) (*UserFlow, error)
-	ShopList(ctx context.Context, areaID string, sales *bool, pagination Pagination) (*ShopList, error)
+	ShopList(ctx context.Context, areaID string, sales bool, pagination Pagination) (*ShopList, error)
 	SearchShop(ctx context.Context, keyword string) (*ShopList, error)
-	CommodityList(ctx context.Context, keyword *string, shopID string, bought *bool, pagination Pagination) (*CommodityList, error)
+	CommodityList(ctx context.Context, keyword *string, shopID string, bought bool, pagination Pagination) (*CommodityList, error)
 	Order(ctx context.Context, id string) (*Order, error)
 	HistoryOrder(ctx context.Context, pagination Pagination) (*HistoryOrder, error)
 	ShippingAddress(ctx context.Context) (*ShippingAddressList, error)
@@ -1152,7 +1152,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.CommodityList(childComplexity, args["keyword"].(*string), args["shopId"].(string), args["bought"].(*bool), args["pagination"].(Pagination)), true
+		return e.complexity.Query.CommodityList(childComplexity, args["keyword"].(*string), args["shopId"].(string), args["bought"].(bool), args["pagination"].(Pagination)), true
 
 	case "Query.healthCheck":
 		if e.complexity.Query.HealthCheck == nil {
@@ -1271,7 +1271,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ShopList(childComplexity, args["areaId"].(string), args["sales"].(*bool), args["pagination"].(Pagination)), true
+		return e.complexity.Query.ShopList(childComplexity, args["areaId"].(string), args["sales"].(bool), args["pagination"].(Pagination)), true
 
 	case "Query.user":
 		if e.complexity.Query.User == nil {
@@ -2071,11 +2071,11 @@ type Captcha {
 `, BuiltIn: false},
 	{Name: "internal/graphql/applets/shop.graphql", Input: `extend type Query {
     # 获取最近门店 (片区ID，是否按照评排名)
-    shopList(areaId: String!, sales: Boolean,pagination: Pagination!): ShopList!
+    shopList(areaId: String!, sales: Boolean!,pagination: Pagination!): ShopList!
     # 门店搜索  max: 100
     searchShop(keyword: String!): ShopList! @hasLogined
     # 商品list commodity (商品名称[为空则展示全部], 门店ID, 买过的)
-    commodityList(keyword: String, shopId: String!,bought: Boolean, pagination: Pagination!): CommodityList! @hasLogined
+    commodityList(keyword: String, shopId: String!,bought: Boolean!, pagination: Pagination!): CommodityList! @hasLogined
     # 订单详情
     order(id: String!): Order @hasLogined
     # 历史订单
@@ -2117,7 +2117,7 @@ type Shop {
     logoUri: String!
     address: String!  # 具体地址
     announcement: String! # 公告
-    score: String!   # 评分
+    score: Float!   # 评分
     startDelivery: Float!  # 起送价格
 }
 
@@ -2566,10 +2566,10 @@ func (ec *executionContext) field_Query_commodityList_args(ctx context.Context, 
 		}
 	}
 	args["shopId"] = arg1
-	var arg2 *bool
+	var arg2 bool
 	if tmp, ok := rawArgs["bought"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bought"))
-		arg2, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+		arg2, err = ec.unmarshalNBoolean2bool(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2743,10 +2743,10 @@ func (ec *executionContext) field_Query_shopList_args(ctx context.Context, rawAr
 		}
 	}
 	args["areaId"] = arg0
-	var arg1 *bool
+	var arg1 bool
 	if tmp, ok := rawArgs["sales"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sales"))
-		arg1, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+		arg1, err = ec.unmarshalNBoolean2bool(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -7053,7 +7053,7 @@ func (ec *executionContext) _Query_shopList(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ShopList(rctx, args["areaId"].(string), args["sales"].(*bool), args["pagination"].(Pagination))
+		return ec.resolvers.Query().ShopList(rctx, args["areaId"].(string), args["sales"].(bool), args["pagination"].(Pagination))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7158,7 +7158,7 @@ func (ec *executionContext) _Query_commodityList(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().CommodityList(rctx, args["keyword"].(*string), args["shopId"].(string), args["bought"].(*bool), args["pagination"].(Pagination))
+			return ec.resolvers.Query().CommodityList(rctx, args["keyword"].(*string), args["shopId"].(string), args["bought"].(bool), args["pagination"].(Pagination))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.HasLogined == nil {
@@ -8025,9 +8025,9 @@ func (ec *executionContext) _Shop_score(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(float64)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Shop_startDelivery(ctx context.Context, field graphql.CollectedField, obj *Shop) (ret graphql.Marshaler) {
