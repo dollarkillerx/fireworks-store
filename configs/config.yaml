@@ -24,7 +24,8 @@ PostgresConfig:
 
 
 CreeperConfig:
-  Uri: http://192.168.88.203:8745
+  Uri: http://192.168.31.20:8745
+  Token: my_token
 
 WarehouseConfig:
   Uri: http://127.0.0.1:8187

@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	"context"
+	"github.com/dollarkillerx/fireworks/internal/storage/basis"
 	"sync"
 	"time"
 
@@ -9,9 +10,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func NewResolver() *Resolver {
-
+func NewResolver(storage *basis.Storage) *Resolver {
 	r := &Resolver{
+		storage: storage,
 		subscriptions: make(map[string][]struct {
 			ID string
 		}),
@@ -21,6 +22,7 @@ func NewResolver() *Resolver {
 
 type Resolver struct {
 	sync.Mutex
+	storage       *basis.Storage
 	subscriptions map[string][]struct {
 		ID string
 	}
@@ -125,10 +127,6 @@ func (q *queryResolver) RebateFlow(ctx context.Context, startTime int, endTime i
 }
 
 func (q *queryResolver) UserFlow(ctx context.Context, startTime int, endTime int, pagination generated.Pagination) (*generated.UserFlow, error) {
-	panic("implement me")
-}
-
-func (q *queryResolver) ShopList(ctx context.Context, areaID string, sales bool, pagination generated.Pagination) (*generated.ShopList, error) {
 	panic("implement me")
 }
 

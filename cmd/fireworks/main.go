@@ -48,7 +48,7 @@ func main() {
 	}
 
 	// 初始化中间件
-	utils.InitLogger(config.GetLoggerConfig())
+	utils.InitLogger(config.GetLoggerConfig(), config.GetCreeperConfig())
 	postgres, err := utils.InitPostgres(config.GetPostgresConfig())
 	if err != nil {
 		log.Fatalln(err)
@@ -59,7 +59,6 @@ func main() {
 		log.Fatalln("Basis Storage 初始化失败: ", err)
 	}
 
-	storage = storage
 	// 初始化中间件 End
 
 	router := chi.NewRouter()
@@ -77,7 +76,7 @@ func main() {
 	}
 
 	conf := generated.Config{
-		Resolvers: resolvers.NewResolver(),
+		Resolvers: resolvers.NewResolver(storage),
 	}
 
 	conf.Directives.HasLogined = func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
