@@ -1,12 +1,12 @@
 type Query {
-    healthcheck: String!
+    healthCheck: String!
     now: Timestamp!
     # 获取用户的详细信息
-    user: UserInformation  @hasLogined()
+    user: UserInformation  @hasLogined
 }
 
 type Mutation {
-    healthcheck: String!
+    healthCheck: String!
 }
 
 directive @hasLoginedForWebsocket on FIELD_DEFINITION
@@ -16,4 +16,32 @@ scalar Timestamp
 
 type UserInformation {
     userID: String!
+}
+
+enum OrderType {
+    ToBePaid, # 等待支付
+    Cancelled,  # 取消
+    PaymentSuccessful, # 支付成功
+}
+
+enum WithdrawType {
+    Wait, # 等待处理
+    Success, # 成功
+    Fail, # 失败
+}
+
+enum IBStateType {
+    Activation  # 激活
+    Freeze   # 冻结
+}
+
+enum IBGrade {
+    Bronze  # 青铜代理
+    Silver  # 白银代理
+    Gold    # 黄金代理
+}
+
+input Pagination {
+    offset: Int!
+    limit: Int!
 }

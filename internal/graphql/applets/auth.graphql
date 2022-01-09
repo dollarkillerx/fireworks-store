@@ -1,0 +1,25 @@
+extend type Query {
+    # 用户登陆 (WechatToken, 经度, 纬度)
+    userLogin(token: String!,latitude: Int!,longitude: Int!): AuthPayload
+    # 位置列表 (经度, 纬度)
+    areaList(latitude: Int!,longitude: Int!): [AreaList!]!
+}
+
+input BasicInfo  {
+    nickName: String! # nickName
+    avatar: String!   # 头像
+    gps: [String!]!   # GPS信息  `[经度,纬度]`
+    phone: String!    # 电话号码
+}
+
+type AuthPayload {
+    accessTokenString: String! # token
+    needBasicInformation: Boolean! # 是否需要基础信息 (true 前端需要获取用户基础信息 并调用)
+    id: String!
+}
+
+type AreaList {
+    id: String!    # 位置ID
+    name: String!  # 位置名称
+}
+

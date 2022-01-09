@@ -1,6 +1,7 @@
 # API 设计API
 
 ## 目录
+
 - [外卖端-小程序](#外卖端-小程序)
 - [代理商返佣端-Web-APP](#代理商返佣端-Web-APP)
 - [商铺控制WEB](#商铺控制WEB)
@@ -8,19 +9,26 @@
 ## 外卖端-小程序
 
 #### 用户相关
-- 微信登陆
-- 用户定位
+
+- 微信登陆     `userLogin`
+- 注册基础信息  `basicRegistrationInformation`
+- 注册邀请码   `registrationInvitationCode`
+- 获取门店位置列表      `locationList`
 
 #### 首页
+
 - 店铺搜索
 - 首页店铺  (筛选)
+
 ##### 店铺主页
+
 - 商品搜索
-- 商品分类 
+- 商品分类
 - 商品列表  (权重)
 - 买过的商品
 
 ##### 订单
+
 - 下单
 - 订单支付
 - 历史订单list
@@ -29,6 +37,7 @@
 - 评价页面
 
 ##### 用户
+
 - 用户登陆
 - 用户注册
 - 位置管理 (CURD)
@@ -37,6 +46,7 @@
 - 餐饮加盟
 
 ## 代理商返佣端-Web-APP
+
 - 登陆注册
 - 所有商品
 - 商品搜索
@@ -50,6 +60,7 @@
 - 代理分级文字稿
 
 ## 商铺控制WEB
+
 - 商家登陆
 - 商家大屏
 - 商品管理
@@ -82,8 +93,9 @@
     - 返佣金额计算
     - 返佣详情
     - 返佣状态管理
-    
+
 ### 当前需调研
+
 - [x] 小程序登陆
 - [x] 小程序定位 `https://developers.weixin.qq.com/community/develop/doc/0000a6fae50cd88e883814f0851000`
 - [ ] 小程序支付
@@ -91,5 +103,5 @@
 *小程序登陆*
 > https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/login/auth.code2Session.html
 
-- GET `GET https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code`
-
+-
+GET `GET https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code`

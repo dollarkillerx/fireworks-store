@@ -31,7 +31,7 @@ func main() {
 
 		appid := "appid"
 		secret := "secret"
-		code, resp, err := urllib.Get(fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", appid, secret, login.Code)).Debug().
+		code, resp, err := urllib.Get(fmt.Sprintf("https://applets.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", appid, secret, login.Code)).Debug().
 			ByteOriginal()
 		if err != nil {
 			log.Fatalln(err)

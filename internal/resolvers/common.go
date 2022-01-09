@@ -36,14 +36,34 @@ func (r *Resolver) Query() generated.QueryResolver {
 
 type mutationResolver struct{ *Resolver } // MutationResolver
 
-func (m *mutationResolver) Healthcheck(ctx context.Context) (string, error) {
+func (m *mutationResolver) HealthCheck(ctx context.Context) (string, error) {
 	return "ok", nil
+}
+
+func (m *mutationResolver) BasicRegistrationInformation(ctx context.Context, input *generated.BasicInfo) (*bool, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *mutationResolver) RegistrationInvitationCode(ctx context.Context, invitationCode string) (*bool, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 type queryResolver struct{ *Resolver } // QueryResolver
 
-func (q *queryResolver) Healthcheck(ctx context.Context) (string, error) {
+func (q *queryResolver) HealthCheck(ctx context.Context) (string, error) {
 	return "ok", nil
+}
+
+func (q *queryResolver) UserLogin(ctx context.Context, token string, latitude int, longitude int) (*generated.AuthPayload, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (q *queryResolver) LocationList(ctx context.Context, latitude int, longitude int) ([]generated.LocationList, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (q *queryResolver) Now(ctx context.Context) (*timestamppb.Timestamp, error) {

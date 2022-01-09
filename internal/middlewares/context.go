@@ -2,13 +2,13 @@ package middlewares
 
 import (
 	"context"
+	"github.com/dollarkillerx/fireworks/pkg/utils"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/dollarkillerx/common/pkg/jwt"
 	"github.com/dollarkillerx/fireworks/internal/config"
-	"github.com/dollarkillerx/fireworks/utils"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )

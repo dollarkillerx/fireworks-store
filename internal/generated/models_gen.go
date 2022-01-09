@@ -2,11 +2,636 @@
 
 package generated
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
+type ConfigItem interface {
+	IsConfigItem()
+}
+
+type PageConfig interface {
+	IsPageConfig()
+}
+
+type ResultItem interface {
+	IsResultItem()
+}
+
+type Action struct {
+	ID       string   `json:"id"`
+	Name     string   `json:"name"`
+	PageType PageType `json:"pageType"`
+}
+
+func (Action) IsConfigItem() {}
+
+type AreaList struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type AuthPayload struct {
-	AccessTokenString string `json:"accessTokenString"`
-	ID                string `json:"id"`
+	AccessTokenString    string `json:"accessTokenString"`
+	NeedBasicInformation bool   `json:"needBasicInformation"`
+	ID                   string `json:"id"`
+}
+
+type BasicInfo struct {
+	NickName string   `json:"nickName"`
+	Avatar   string   `json:"avatar"`
+	Gps      []string `json:"gps"`
+	Phone    string   `json:"phone"`
+}
+
+type BigScreen struct {
+	Items []BigScreenItem `json:"Items"`
+}
+
+func (BigScreen) IsPageConfig() {}
+
+type BigScreenItem struct {
+	Prefix string `json:"prefix"`
+	Suffix string `json:"suffix"`
+	Value  string `json:"value"`
+}
+
+type Captcha struct {
+	Img          string `json:"img"`
+	CaptchaToken string `json:"captchaToken"`
+}
+
+type Commodity struct {
+	ID                   string  `json:"id"`
+	Name                 string  `json:"name"`
+	UnitPrice            float64 `json:"unitPrice"`
+	Weights              float64 `json:"weights"`
+	Inventory            int     `json:"inventory"`
+	Picture              string  `json:"picture"`
+	Describe             string  `json:"describe"`
+	Integral             float64 `json:"integral"`
+	IbIntegral           float64 `json:"ibIntegral"`
+	RebateLeve1          float64 `json:"rebateLeve1"`
+	RebateLeve2          float64 `json:"rebateLeve2"`
+	RebateLeve3          float64 `json:"rebateLeve3"`
+	RegionalRestrictions bool    `json:"regional_restrictions"`
+	Activation           bool    `json:"activation"`
+	NumberCopies         float64 `json:"numberCopies"`
+}
+
+type CommodityList struct {
+	Total         int         `json:"Total"`
+	Nodes         []Commodity `json:"Nodes"`
+	StartDelivery float64     `json:"startDelivery"`
+}
+
+type ConfigRow struct {
+	Items []ConfigItem `json:"items"`
+}
+
+type CreateCommodity struct {
+	Name      string  `json:"name"`
+	UnitPrice float64 `json:"unitPrice"`
+}
+
+type CreateShippingAddress struct {
+	School          string `json:"school"`
+	ShippingAddress string `json:"shippingAddress"`
+	ContactPerson   string `json:"contactPerson"`
+	ContactNumber   string `json:"contactNumber"`
+	Gender          bool   `json:"gender"`
+}
+
+type DataSelect struct {
+	ReadOnly bool   `json:"readOnly"`
+	Required bool   `json:"required"`
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+}
+
+func (DataSelect) IsConfigItem() {}
+
+type Details struct {
+	Line        []ConfigRow `json:"line"`
+	ReadingMode bool        `json:"readingMode"`
+}
+
+func (Details) IsPageConfig() {}
+
+type EnumInput struct {
+	ReadOnly bool      `json:"readOnly"`
+	Required bool      `json:"required"`
+	ID       string    `json:"id"`
+	Name     string    `json:"name"`
+	Enums    *EnumItem `json:"enums"`
+}
+
+type EnumItem struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type HistoryOrder struct {
+	Total  int     `json:"total"`
+	Orders []Order `json:"orders"`
+}
+
+type IbRegistry struct {
+	CaptchaToken   string `json:"captchaToken"`
+	Captcha        string `json:"captcha"`
+	Password       string `json:"password"`
+	Name           string `json:"name"`
+	Remark         string `json:"remark"`
+	InvitationCode string `json:"invitationCode"`
+}
+
+type InputItem struct {
+	ReadOnly bool      `json:"readOnly"`
+	Required bool      `json:"required"`
+	Key      string    `json:"key"`
+	Name     string    `json:"name"`
+	Type     InputType `json:"type"`
+}
+
+func (InputItem) IsConfigItem() {}
+
+type InputResult struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+func (InputResult) IsResultItem() {}
+
+type Manage struct {
+	Line        []ConfigRow `json:"line"`
+	ReadingMode bool        `json:"readingMode"`
+}
+
+func (Manage) IsPageConfig() {}
+
+type MsgBox struct {
+	Title   string      `json:"title"`
+	Message string      `json:"message"`
+	Stats   ResultStats `json:"stats"`
+}
+
+type MyRebate struct {
+	PromoteUsersToday    int     `json:"promoteUsersToday"`
+	CommissionToday      float64 `json:"commissionToday"`
+	TotalCommission      float64 `json:"totalCommission"`
+	HistoricalCommission float64 `json:"historicalCommission"`
+}
+
+type Order struct {
+	ID              string      `json:"id"`
+	ShopLogo        string      `json:"shopLogo"`
+	ShopName        string      `json:"shopName"`
+	ShopID          string      `json:"shopID"`
+	TotalPrice      float64     `json:"totalPrice"`
+	Freight         float64     `json:"freight"`
+	OrderType       OrderType   `json:"orderType"`
+	Remark          string      `json:"remark"`
+	Commodities     []Commodity `json:"commodities"`
+	CreatedAt       int         `json:"createdAt"`
+	ContactPerson   string      `json:"contactPerson"`
+	DeliveryAddress string      `json:"deliveryAddress"`
+}
+
+type Page struct {
+	ID         string     `json:"id"`
+	Name       string     `json:"name"`
+	PageType   PageType   `json:"pageType"`
+	PageConfig PageConfig `json:"pageConfig"`
+}
+
+type Pagination struct {
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+}
+
+type PlaceOrder struct {
+	Token string `json:"token"`
+}
+
+type ResultData struct {
+	Stats  ResultStats  `json:"stats"`
+	MsgBox *MsgBox      `json:"msgBox"`
+	Data   []ResultItem `json:"data"`
+}
+
+type ShippingAddress struct {
+	ID              string `json:"id"`
+	School          string `json:"school"`
+	ShippingAddress string `json:"shippingAddress"`
+	ContactPerson   string `json:"contactPerson"`
+	ContactNumber   string `json:"contactNumber"`
+	Gender          bool   `json:"gender"`
+}
+
+type ShippingAddressList struct {
+	Total           int               `json:"total"`
+	ShippingAddress []ShippingAddress `json:"shippingAddress"`
+}
+
+type Shop struct {
+	ID            string  `json:"id"`
+	Name          string  `json:"name"`
+	LogoURI       string  `json:"logoUri"`
+	Address       string  `json:"address"`
+	Announcement  string  `json:"announcement"`
+	Score         string  `json:"score"`
+	StartDelivery float64 `json:"startDelivery"`
+}
+
+type ShopList struct {
+	Total int    `json:"Total"`
+	Nodes []Shop `json:"Nodes"`
+}
+
+type Submit struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Color string `json:"color"`
+}
+
+func (Submit) IsConfigItem() {}
+
+type Table struct {
+	ID     string        `json:"id"`
+	Name   string        `json:"name"`
+	Column []TableColumn `json:"column"`
+}
+
+func (Table) IsConfigItem() {}
+
+type TableColumn struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type TableRowItem struct {
+	ID     string  `json:"id"`
+	Key    string  `json:"key"`
+	Value  string  `json:"value"`
+	Action *Action `json:"action"`
+}
+
+type TableRowResult struct {
+	Rows []TableRowItem `json:"rows"`
+}
+
+func (TableRowResult) IsResultItem() {}
+
+type TextButton struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+	Color string `json:"color"`
+}
+
+func (TextButton) IsConfigItem() {}
+
+type UpdateCommodity struct {
+	Name *string `json:"name"`
 }
 
 type UserInformation struct {
 	UserID string `json:"userID"`
+}
+
+type MyIb struct {
+	InvitationCode string      `json:"invitationCode"`
+	UserID         string      `json:"userID"`
+	Integral       string      `json:"integral"`
+	AgencyLevel    IBGrade     `json:"agencyLevel"`
+	Status         IBStateType `json:"status"`
+}
+
+type RebateFlow struct {
+	Total *int         `json:"total"`
+	Nodes []RebateItem `json:"Nodes"`
+}
+
+type RebateItem struct {
+	ID       string       `json:"id"`
+	Amount   float64      `json:"amount"`
+	State    WithdrawType `json:"state"`
+	Message  string       `json:"message"`
+	CreateAt int          `json:"createAt"`
+}
+
+type UserFlow struct {
+	Total int            `json:"total"`
+	Nodes []UserFlowItem `json:"Nodes"`
+}
+
+type UserFlowItem struct {
+	ID        string  `json:"id"`
+	Name      string  `json:"name"`
+	Commodity string  `json:"commodity"`
+	CreateAt  int     `json:"createAt"`
+	Rebate    float64 `json:"rebate"`
+	Integral  float64 `json:"integral"`
+}
+
+type IBGrade string
+
+const (
+	IBGradeBronze IBGrade = "Bronze"
+	IBGradeSilver IBGrade = "Silver"
+	IBGradeGold   IBGrade = "Gold"
+)
+
+var AllIBGrade = []IBGrade{
+	IBGradeBronze,
+	IBGradeSilver,
+	IBGradeGold,
+}
+
+func (e IBGrade) IsValid() bool {
+	switch e {
+	case IBGradeBronze, IBGradeSilver, IBGradeGold:
+		return true
+	}
+	return false
+}
+
+func (e IBGrade) String() string {
+	return string(e)
+}
+
+func (e *IBGrade) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = IBGrade(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid IBGrade", str)
+	}
+	return nil
+}
+
+func (e IBGrade) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type IBStateType string
+
+const (
+	IBStateTypeActivation IBStateType = "Activation"
+	IBStateTypeFreeze     IBStateType = "Freeze"
+)
+
+var AllIBStateType = []IBStateType{
+	IBStateTypeActivation,
+	IBStateTypeFreeze,
+}
+
+func (e IBStateType) IsValid() bool {
+	switch e {
+	case IBStateTypeActivation, IBStateTypeFreeze:
+		return true
+	}
+	return false
+}
+
+func (e IBStateType) String() string {
+	return string(e)
+}
+
+func (e *IBStateType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = IBStateType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid IBStateType", str)
+	}
+	return nil
+}
+
+func (e IBStateType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type InputType string
+
+const (
+	InputTypeText   InputType = "Text"
+	InputTypeNumber InputType = "Number"
+	InputTypeBool   InputType = "Bool"
+	InputTypeFile   InputType = "File"
+)
+
+var AllInputType = []InputType{
+	InputTypeText,
+	InputTypeNumber,
+	InputTypeBool,
+	InputTypeFile,
+}
+
+func (e InputType) IsValid() bool {
+	switch e {
+	case InputTypeText, InputTypeNumber, InputTypeBool, InputTypeFile:
+		return true
+	}
+	return false
+}
+
+func (e InputType) String() string {
+	return string(e)
+}
+
+func (e *InputType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = InputType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid InputType", str)
+	}
+	return nil
+}
+
+func (e InputType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type OrderType string
+
+const (
+	OrderTypeToBePaid          OrderType = "ToBePaid"
+	OrderTypeCancelled         OrderType = "Cancelled"
+	OrderTypePaymentSuccessful OrderType = "PaymentSuccessful"
+)
+
+var AllOrderType = []OrderType{
+	OrderTypeToBePaid,
+	OrderTypeCancelled,
+	OrderTypePaymentSuccessful,
+}
+
+func (e OrderType) IsValid() bool {
+	switch e {
+	case OrderTypeToBePaid, OrderTypeCancelled, OrderTypePaymentSuccessful:
+		return true
+	}
+	return false
+}
+
+func (e OrderType) String() string {
+	return string(e)
+}
+
+func (e *OrderType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = OrderType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid OrderType", str)
+	}
+	return nil
+}
+
+func (e OrderType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type PageType string
+
+const (
+	PageTypeBigScreen PageType = "BigScreen"
+	PageTypeManage    PageType = "Manage"
+	PageTypeDetails   PageType = "Details"
+)
+
+var AllPageType = []PageType{
+	PageTypeBigScreen,
+	PageTypeManage,
+	PageTypeDetails,
+}
+
+func (e PageType) IsValid() bool {
+	switch e {
+	case PageTypeBigScreen, PageTypeManage, PageTypeDetails:
+		return true
+	}
+	return false
+}
+
+func (e PageType) String() string {
+	return string(e)
+}
+
+func (e *PageType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PageType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PageType", str)
+	}
+	return nil
+}
+
+func (e PageType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type ResultStats string
+
+const (
+	ResultStatsSuccess ResultStats = "Success"
+	ResultStatsError   ResultStats = "Error"
+	ResultStatsInfo    ResultStats = "Info"
+)
+
+var AllResultStats = []ResultStats{
+	ResultStatsSuccess,
+	ResultStatsError,
+	ResultStatsInfo,
+}
+
+func (e ResultStats) IsValid() bool {
+	switch e {
+	case ResultStatsSuccess, ResultStatsError, ResultStatsInfo:
+		return true
+	}
+	return false
+}
+
+func (e ResultStats) String() string {
+	return string(e)
+}
+
+func (e *ResultStats) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ResultStats(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ResultStats", str)
+	}
+	return nil
+}
+
+func (e ResultStats) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type WithdrawType string
+
+const (
+	WithdrawTypeWait    WithdrawType = "Wait"
+	WithdrawTypeSuccess WithdrawType = "Success"
+	WithdrawTypeFail    WithdrawType = "Fail"
+)
+
+var AllWithdrawType = []WithdrawType{
+	WithdrawTypeWait,
+	WithdrawTypeSuccess,
+	WithdrawTypeFail,
+}
+
+func (e WithdrawType) IsValid() bool {
+	switch e {
+	case WithdrawTypeWait, WithdrawTypeSuccess, WithdrawTypeFail:
+		return true
+	}
+	return false
+}
+
+func (e WithdrawType) String() string {
+	return string(e)
+}
+
+func (e *WithdrawType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = WithdrawType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid WithdrawType", str)
+	}
+	return nil
+}
+
+func (e WithdrawType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

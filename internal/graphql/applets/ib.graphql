@@ -1,0 +1,77 @@
+extend type Query {
+    # 登录  (账户,密码,用户填写验证码,验证码token)
+    ibLogin(account: String!, password: String!, captcha: String!,captchaToken: String!): AuthPayload!
+    # 返佣商品 (商品名称[可选], 分页信息)
+    rebateMerchandise(keyword: String, pagination: Pagination!): CommodityList! @hasLogined
+    # 我的返佣
+    myRebate: MyRebate! @hasLogined
+    # ib 我的
+    myIB: myIB! @hasLogined
+    # 返佣流水  (开始时间, 结束时间, 分页)
+    rebateFlow(startTime: Int!,endTime: Int!,pagination: Pagination!): rebateFlow! @hasLogined
+    # 用户消费流水
+    userFlow(startTime: Int!,endTime: Int!,pagination: Pagination!): userFlow! @hasLogined
+}
+
+extend type Mutation {
+    # 注册
+    ibRegistry(input: IbRegistry!): AuthPayload!
+    # 提取佣金
+    withdrawalCommission(AlipayID: String!, captcha: String!,captchaToken: String!): Boolean!
+}
+
+type myIB {
+    invitationCode: String! # 邀请码
+    userID: String! # 用户id
+    integral: String! # 用户积分
+    agencyLevel: IBGrade! # 代理等级
+    status: IBStateType! # 代理状态
+}
+
+type userFlow {
+    total: Int!
+    Nodes: [userFlowItem!]!
+}
+
+type userFlowItem {
+    id: String! # 流水ID
+    name: String! # 用户名
+    commodity: String! # 商品
+    createAt: Int! # 创建时间
+    rebate: Float! # 返佣
+    integral: Float! # 积分
+}
+
+
+type rebateFlow {
+    total: Int
+    Nodes: [rebateItem!]!
+}
+
+type rebateItem {
+    id: String! # 流水号
+    amount: Float! # 提取金额
+    state: WithdrawType! # 状态
+    message: String! # 如果状态为失败， 次值则为失败原因
+    createAt: Int! # 创建时间
+}
+
+type MyRebate {
+    promoteUsersToday: Int! # 今日推广用户个数
+    commissionToday: Float! # 今日佣金
+    totalCommission: Float! # 总佣金
+    historicalCommission: Float! # 历史佣金
+}
+
+input IbRegistry {
+    captchaToken: String!  # 验证码token
+    captcha: String! # 验证码
+    password: String!
+    name: String!
+    remark: String! # 备注
+    invitationCode: String! # 邀请码
+}
+
+
+
+

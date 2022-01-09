@@ -1,0 +1,35 @@
+type ResultData {
+    stats: ResultStats! # 返回状态
+    msgBox: MsgBox
+    data: [ResultItem!]! # 具体数据
+}
+
+type MsgBox {
+    title: String!
+    message: String!
+    stats: ResultStats!
+}
+
+enum ResultStats {
+    Success
+    Error
+    Info
+}
+
+union ResultItem = InputResult | TableRowResult
+
+type InputResult {
+    key: String!
+    value: String!
+}
+
+type TableRowResult {
+    rows: [TableRowItem!]!
+}
+
+type TableRowItem {
+    id: String!
+    key: String!
+    value: String!
+    action: Action
+}

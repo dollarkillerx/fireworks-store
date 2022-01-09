@@ -1,9 +1,0 @@
-extend type Mutation {
-    # 创建账户
-    createUserAccount(email: String!, password: String!): AuthPayload
-}
-
-type AuthPayload {
-    accessTokenString: String!
-    id: String!
-}
