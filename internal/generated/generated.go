@@ -2117,7 +2117,7 @@ type Shop {
     logoUri: String!
     address: String!  # 具体地址
     announcement: String! # 公告
-    score: String!   # 评分
+    score: Float!   # 评分
     startDelivery: Float!  # 起送价格
 }
 
@@ -8025,9 +8025,9 @@ func (ec *executionContext) _Shop_score(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(float64)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Shop_startDelivery(ctx context.Context, field graphql.CollectedField, obj *Shop) (ret graphql.Marshaler) {

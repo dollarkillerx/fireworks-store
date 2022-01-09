@@ -46,7 +46,7 @@ type Shop {
     logoUri: String!
     address: String!  # 具体地址
     announcement: String! # 公告
-    score: String!   # 评分
+    score: Float!   # 评分
     startDelivery: Float!  # 起送价格
 }
 
