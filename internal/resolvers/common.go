@@ -134,7 +134,7 @@ func (q *queryResolver) SearchShop(ctx context.Context, keyword string) (*genera
 	panic("implement me")
 }
 
-func (q *queryResolver) CommodityList(ctx context.Context, keyword *string, shopID string, bought *bool, pagination generated.Pagination) (*generated.CommodityList, error) {
+func (q *queryResolver) CommodityList(ctx context.Context, keyword *string, shopID string, bought bool, pagination generated.Pagination) (*generated.CommodityList, error) {
 	panic("implement me")
 }
 
