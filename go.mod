@@ -10,6 +10,7 @@ require (
 
 require (
 	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868
+	github.com/dollarkillerx/creeper v0.0.1
 	github.com/dollarkillerx/urllib v1.13.16
 	github.com/dollarkillerx/warehouse v0.0.0-20220105035102-879dd4f489c7
 	github.com/go-chi/chi v4.1.2+incompatible
@@ -19,9 +20,8 @@ require (
 	github.com/jinzhu/now v1.1.4 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.6.0
-	github.com/sony/sonyflake v1.0.0 // indirect
+	github.com/sony/sonyflake v1.0.0
 	google.golang.org/protobuf v1.27.1
 	gorm.io/driver/postgres v1.2.3
-	gorm.io/driver/sqlite v1.2.6
 	gorm.io/gorm v1.22.4
 )
