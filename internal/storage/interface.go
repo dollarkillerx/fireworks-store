@@ -7,8 +7,8 @@ type Interface interface {
 	GetShopList(sales bool, offset int, limit int) (total int, shops []models.Shop, err error)
 
 	// SearchShop 按片区搜索店铺信息. 参数：areaID 片区id. 返回：total 数据总数,shops 店铺数组
-	SearchShop(areaID string) (total int, shops []models.Shop, err error)
+	SearchShop(keyword string, offset int, limit int) (total int, shops []models.Shop, err error)
 
 	// GetShopByID 根据店铺ID查询商铺信息. 参数：shopID 店铺ID. 返回：shop 店铺信息
-	GetShopByID(shopID string) (shop models.Shop, err error)
+	GetShopByID(shopID string) (shop *models.Shop, err error)
 }

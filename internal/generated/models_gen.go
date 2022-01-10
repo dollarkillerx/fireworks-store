@@ -82,8 +82,8 @@ type Commodity struct {
 }
 
 type CommodityList struct {
-	Total         int         `json:"Total"`
-	Nodes         []Commodity `json:"Nodes"`
+	Total         int         `json:"total"`
+	Nodes         []Commodity `json:"nodes"`
 	StartDelivery float64     `json:"startDelivery"`
 }
 
@@ -246,8 +246,8 @@ type Shop struct {
 }
 
 type ShopList struct {
-	Total int    `json:"Total"`
-	Nodes []Shop `json:"Nodes"`
+	Total int    `json:"total"`
+	Nodes []Shop `json:"nodes"`
 }
 
 type Submit struct {

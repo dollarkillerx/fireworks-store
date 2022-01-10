@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dollarkillerx/fireworks/pkg/utils"
 	"gorm.io/gorm"
 )
 
@@ -14,6 +15,12 @@ type CommonModel struct {
 	CreatedAt time.Time `gorm:"index"`
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+func DefaultCommonModel() CommonModel {
+	return CommonModel{
+		ID: utils.SonuFlakeStringID(),
+	}
 }
 
 type IBStateType string

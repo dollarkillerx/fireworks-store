@@ -224,9 +224,9 @@ type ComplexityRoot struct {
 		Order             func(childComplexity int, id string) int
 		RebateFlow        func(childComplexity int, startTime int, endTime int, pagination Pagination) int
 		RebateMerchandise func(childComplexity int, keyword *string, pagination Pagination) int
-		SearchShop        func(childComplexity int, keyword string) int
 		ShippingAddress   func(childComplexity int) int
-		ShopList          func(childComplexity int, areaID string, sales bool, pagination Pagination) int
+		Shop              func(childComplexity int, id string) int
+		ShopList          func(childComplexity int, keyword *string, areaID string, sales bool, pagination Pagination) int
 		User              func(childComplexity int) int
 		UserFlow          func(childComplexity int, startTime int, endTime int, pagination Pagination) int
 		UserLogin         func(childComplexity int, token string, latitude int, longitude int) int
@@ -370,8 +370,8 @@ type QueryResolver interface {
 	MyIb(ctx context.Context) (*MyIb, error)
 	RebateFlow(ctx context.Context, startTime int, endTime int, pagination Pagination) (*RebateFlow, error)
 	UserFlow(ctx context.Context, startTime int, endTime int, pagination Pagination) (*UserFlow, error)
-	ShopList(ctx context.Context, areaID string, sales bool, pagination Pagination) (*ShopList, error)
-	SearchShop(ctx context.Context, keyword string) (*ShopList, error)
+	ShopList(ctx context.Context, keyword *string, areaID string, sales bool, pagination Pagination) (*ShopList, error)
+	Shop(ctx context.Context, id string) (*Shop, error)
 	CommodityList(ctx context.Context, keyword *string, shopID string, bought bool, pagination Pagination) (*CommodityList, error)
 	Order(ctx context.Context, id string) (*Order, error)
 	HistoryOrder(ctx context.Context, pagination Pagination) (*HistoryOrder, error)
@@ -596,7 +596,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Commodity.Weights(childComplexity), true
 
-	case "CommodityList.Nodes":
+	case "CommodityList.nodes":
 		if e.complexity.CommodityList.Nodes == nil {
 			break
 		}
@@ -610,7 +610,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommodityList.StartDelivery(childComplexity), true
 
-	case "CommodityList.Total":
+	case "CommodityList.total":
 		if e.complexity.CommodityList.Total == nil {
 			break
 		}
@@ -1242,24 +1242,24 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.RebateMerchandise(childComplexity, args["keyword"].(*string), args["pagination"].(Pagination)), true
 
-	case "Query.searchShop":
-		if e.complexity.Query.SearchShop == nil {
-			break
-		}
-
-		args, err := ec.field_Query_searchShop_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.SearchShop(childComplexity, args["keyword"].(string)), true
-
 	case "Query.shippingAddress":
 		if e.complexity.Query.ShippingAddress == nil {
 			break
 		}
 
 		return e.complexity.Query.ShippingAddress(childComplexity), true
+
+	case "Query.shop":
+		if e.complexity.Query.Shop == nil {
+			break
+		}
+
+		args, err := ec.field_Query_shop_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Shop(childComplexity, args["id"].(string)), true
 
 	case "Query.shopList":
 		if e.complexity.Query.ShopList == nil {
@@ -1271,7 +1271,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ShopList(childComplexity, args["areaId"].(string), args["sales"].(bool), args["pagination"].(Pagination)), true
+		return e.complexity.Query.ShopList(childComplexity, args["keyword"].(*string), args["areaId"].(string), args["sales"].(bool), args["pagination"].(Pagination)), true
 
 	case "Query.user":
 		if e.complexity.Query.User == nil {
@@ -1430,14 +1430,14 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Shop.StartDelivery(childComplexity), true
 
-	case "ShopList.Nodes":
+	case "ShopList.nodes":
 		if e.complexity.ShopList.Nodes == nil {
 			break
 		}
 
 		return e.complexity.ShopList.Nodes(childComplexity), true
 
-	case "ShopList.Total":
+	case "ShopList.total":
 		if e.complexity.ShopList.Total == nil {
 			break
 		}
@@ -2070,10 +2070,10 @@ type Captcha {
 }
 `, BuiltIn: false},
 	{Name: "internal/graphql/applets/shop.graphql", Input: `extend type Query {
-    # 获取最近门店 (片区ID，是否按照评排名)
-    shopList(areaId: String!, sales: Boolean!,pagination: Pagination!): ShopList!
-    # 门店搜索  max: 100
-    searchShop(keyword: String!): ShopList! @hasLogined
+    # 获取最近门店 (门店关键词[可选],片区ID，是否按照评排名)
+    shopList(keyword: String,areaId: String!, sales: Boolean!,pagination: Pagination!): ShopList! @hasLogined
+    # 更具shopId 获取shop详情
+    shop(id: String!): Shop! @hasLogined
     # 商品list commodity (商品名称[为空则展示全部], 门店ID, 买过的)
     commodityList(keyword: String, shopId: String!,bought: Boolean!, pagination: Pagination!): CommodityList! @hasLogined
     # 订单详情
@@ -2122,8 +2122,8 @@ type Shop {
 }
 
 type ShopList {
-    Total: Int!
-    Nodes: [Shop!]!
+    total: Int!
+    nodes: [Shop!]!
 }
 
 type Commodity {
@@ -2147,8 +2147,8 @@ type Commodity {
 }
 
 type CommodityList {
-    Total: Int!
-    Nodes: [Commodity!]!
+    total: Int!
+    nodes: [Commodity!]!
     startDelivery: Float! # 启送价格
 }
 `, BuiltIn: false},
@@ -2716,51 +2716,60 @@ func (ec *executionContext) field_Query_rebateMerchandise_args(ctx context.Conte
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_searchShop_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_shopList_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
+	var arg0 *string
 	if tmp, ok := rawArgs["keyword"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyword"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["keyword"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["areaId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("areaId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["areaId"] = arg1
+	var arg2 bool
+	if tmp, ok := rawArgs["sales"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sales"))
+		arg2, err = ec.unmarshalNBoolean2bool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["sales"] = arg2
+	var arg3 Pagination
+	if tmp, ok := rawArgs["pagination"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
+		arg3, err = ec.unmarshalNPagination2githubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐPagination(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pagination"] = arg3
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_shopList_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_shop_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["areaId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("areaId"))
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["areaId"] = arg0
-	var arg1 bool
-	if tmp, ok := rawArgs["sales"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sales"))
-		arg1, err = ec.unmarshalNBoolean2bool(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["sales"] = arg1
-	var arg2 Pagination
-	if tmp, ok := rawArgs["pagination"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
-		arg2, err = ec.unmarshalNPagination2githubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐPagination(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["pagination"] = arg2
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -3883,7 +3892,7 @@ func (ec *executionContext) _Commodity_numberCopies(ctx context.Context, field g
 	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _CommodityList_Total(ctx context.Context, field graphql.CollectedField, obj *CommodityList) (ret graphql.Marshaler) {
+func (ec *executionContext) _CommodityList_total(ctx context.Context, field graphql.CollectedField, obj *CommodityList) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3918,7 +3927,7 @@ func (ec *executionContext) _CommodityList_Total(ctx context.Context, field grap
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _CommodityList_Nodes(ctx context.Context, field graphql.CollectedField, obj *CommodityList) (ret graphql.Marshaler) {
+func (ec *executionContext) _CommodityList_nodes(ctx context.Context, field graphql.CollectedField, obj *CommodityList) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7052,51 +7061,9 @@ func (ec *executionContext) _Query_shopList(ctx context.Context, field graphql.C
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ShopList(rctx, args["areaId"].(string), args["sales"].(bool), args["pagination"].(Pagination))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ShopList)
-	fc.Result = res
-	return ec.marshalNShopList2ᚖgithubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐShopList(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_searchShop(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_searchShop_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().SearchShop(rctx, args["keyword"].(string))
+			return ec.resolvers.Query().ShopList(rctx, args["keyword"].(*string), args["areaId"].(string), args["sales"].(bool), args["pagination"].(Pagination))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.HasLogined == nil {
@@ -7130,6 +7097,68 @@ func (ec *executionContext) _Query_searchShop(ctx context.Context, field graphql
 	res := resTmp.(*ShopList)
 	fc.Result = res
 	return ec.marshalNShopList2ᚖgithubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐShopList(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_shop(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_shop_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Shop(rctx, args["id"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.HasLogined == nil {
+				return nil, errors.New("directive hasLogined is not implemented")
+			}
+			return ec.directives.HasLogined(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*Shop); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/dollarkillerx/fireworks/internal/generated.Shop`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*Shop)
+	fc.Result = res
+	return ec.marshalNShop2ᚖgithubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐShop(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_commodityList(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -8065,7 +8094,7 @@ func (ec *executionContext) _Shop_startDelivery(ctx context.Context, field graph
 	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ShopList_Total(ctx context.Context, field graphql.CollectedField, obj *ShopList) (ret graphql.Marshaler) {
+func (ec *executionContext) _ShopList_total(ctx context.Context, field graphql.CollectedField, obj *ShopList) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8100,7 +8129,7 @@ func (ec *executionContext) _ShopList_Total(ctx context.Context, field graphql.C
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ShopList_Nodes(ctx context.Context, field graphql.CollectedField, obj *ShopList) (ret graphql.Marshaler) {
+func (ec *executionContext) _ShopList_nodes(ctx context.Context, field graphql.CollectedField, obj *ShopList) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -11355,9 +11384,9 @@ func (ec *executionContext) _CommodityList(ctx context.Context, sel ast.Selectio
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("CommodityList")
-		case "Total":
+		case "total":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._CommodityList_Total(ctx, field, obj)
+				return ec._CommodityList_total(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -11365,9 +11394,9 @@ func (ec *executionContext) _CommodityList(ctx context.Context, sel ast.Selectio
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "Nodes":
+		case "nodes":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._CommodityList_Nodes(ctx, field, obj)
+				return ec._CommodityList_nodes(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -12676,7 +12705,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "searchShop":
+		case "shop":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -12685,7 +12714,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_searchShop(ctx, field)
+				res = ec._Query_shop(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -13081,9 +13110,9 @@ func (ec *executionContext) _ShopList(ctx context.Context, sel ast.SelectionSet,
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("ShopList")
-		case "Total":
+		case "total":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._ShopList_Total(ctx, field, obj)
+				return ec._ShopList_total(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -13091,9 +13120,9 @@ func (ec *executionContext) _ShopList(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "Nodes":
+		case "nodes":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._ShopList_Nodes(ctx, field, obj)
+				return ec._ShopList_nodes(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -14818,6 +14847,16 @@ func (ec *executionContext) marshalNShop2ᚕgithubᚗcomᚋdollarkillerxᚋfirew
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalNShop2ᚖgithubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐShop(ctx context.Context, sel ast.SelectionSet, v *Shop) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Shop(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNShopList2githubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐShopList(ctx context.Context, sel ast.SelectionSet, v ShopList) graphql.Marshaler {

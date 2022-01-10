@@ -1,8 +1,8 @@
 extend type Query {
-    # 获取最近门店 (片区ID，是否按照评排名)
-    shopList(areaId: String!, sales: Boolean!,pagination: Pagination!): ShopList!
-    # 门店搜索  max: 100
-    searchShop(keyword: String!): ShopList! @hasLogined
+    # 获取最近门店 (门店关键词[可选],片区ID，是否按照评排名)
+    shopList(keyword: String,areaId: String!, sales: Boolean!,pagination: Pagination!): ShopList! @hasLogined
+    # 更具shopId 获取shop详情
+    shop(id: String!): Shop! @hasLogined
     # 商品list commodity (商品名称[为空则展示全部], 门店ID, 买过的)
     commodityList(keyword: String, shopId: String!,bought: Boolean!, pagination: Pagination!): CommodityList! @hasLogined
     # 订单详情
@@ -51,8 +51,8 @@ type Shop {
 }
 
 type ShopList {
-    Total: Int!
-    Nodes: [Shop!]!
+    total: Int!
+    nodes: [Shop!]!
 }
 
 type Commodity {
@@ -76,7 +76,7 @@ type Commodity {
 }
 
 type CommodityList {
-    Total: Int!
-    Nodes: [Commodity!]!
+    total: Int!
+    nodes: [Commodity!]!
     startDelivery: Float! # 启送价格
 }

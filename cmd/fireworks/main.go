@@ -80,11 +80,11 @@ func main() {
 	}
 
 	conf.Directives.HasLogined = func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-		userID, err := middlewares.GetUserIDFromCtx(ctx)
-		if err != nil {
-			return nil, err
-		}
-		ctx = middlewares.SetContextUserID(ctx, userID)
+		//userID, err := middlewares.GetUserIDFromCtx(ctx)
+		//if err != nil {
+		//	return nil, err
+		//}
+		//ctx = middlewares.SetContextUserID(ctx, userID)
 		return next(ctx)
 	}
 

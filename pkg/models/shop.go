@@ -22,8 +22,8 @@ type Shop struct {
 	GPSLongitude  int64   //  gps 纬度
 
 	// 登录用
-	Account  string `gorm:"type:varchar(360);index"` // 账户
-	Password string `gorm:"type:varchar(360);index"` // 密码
+	Account  string `gorm:"type:varchar(360);uniqueIndex"` // 账户
+	Password string `gorm:"type:varchar(360);index"`       // 密码
 
 	Activation bool `gorm:"index"` // 激活
 

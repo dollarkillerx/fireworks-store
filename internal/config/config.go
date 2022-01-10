@@ -18,6 +18,7 @@ type config struct {
 type JWTConfiguration struct {
 	SecretKey    string
 	OperationKey string
+	Salt         string // salt
 }
 
 // Global ...

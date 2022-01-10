@@ -1,6 +1,7 @@
 JWTConfig:
   SecretKey: "SecretKey"
   OperationKey: "OperationKey"
+  Salt: "DuEQ4XTn"
 
 LoggerConfig:
   MaxSize: 200
@@ -16,7 +17,8 @@ CORSAllowedOrigins:
   - "*"
 
 PostgresConfig:
-  Host: 192.168.31.20
+#  Host: 192.168.31.20
+  Host: 127.0.0.1
   Port: 5432
   User: root
   Password: root
@@ -24,7 +26,8 @@ PostgresConfig:
 
 
 CreeperConfig:
-  Uri: http://192.168.31.20:8745
+#  Uri: http://192.168.31.20:8745
+  Uri: http://192.168.88.203:8745
   Token: my_token
 
 WarehouseConfig:

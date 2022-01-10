@@ -2,11 +2,12 @@ package resolvers
 
 import (
 	"context"
-	"github.com/dollarkillerx/fireworks/internal/storage/basis"
 	"sync"
 	"time"
 
 	"github.com/dollarkillerx/fireworks/internal/generated"
+	"github.com/dollarkillerx/fireworks/internal/storage"
+	"github.com/dollarkillerx/fireworks/internal/storage/basis"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -22,7 +23,7 @@ func NewResolver(storage *basis.Storage) *Resolver {
 
 type Resolver struct {
 	sync.Mutex
-	storage       *basis.Storage
+	storage       storage.Interface
 	subscriptions map[string][]struct {
 		ID string
 	}
@@ -127,10 +128,6 @@ func (q *queryResolver) RebateFlow(ctx context.Context, startTime int, endTime i
 }
 
 func (q *queryResolver) UserFlow(ctx context.Context, startTime int, endTime int, pagination generated.Pagination) (*generated.UserFlow, error) {
-	panic("implement me")
-}
-
-func (q *queryResolver) SearchShop(ctx context.Context, keyword string) (*generated.ShopList, error) {
 	panic("implement me")
 }
 
