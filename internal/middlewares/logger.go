@@ -36,7 +36,7 @@ func ResponseLogger(ctx context.Context, next graphql.ResponseHandler) *graphql.
 	if res.Data == nil {
 		return res
 	}
-	receivedAt, _ := ctx.Value(requestReceivedAtCtxKey).(time.Time)
+	receivedAt, _ := ctx.Value(RequestReceivedAtCtxKey).(time.Time)
 	utils2.Logger.Tracef("[ReqID]:%s\n[Duration]:%dms\n[Response]:%s",
 		utils2.GetContextRequestID(ctx),
 		time.Since(receivedAt).Milliseconds(),

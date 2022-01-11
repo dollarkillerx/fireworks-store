@@ -13,12 +13,18 @@ type config struct {
 	PostgresConfig  cfg.PostgresConfiguration
 	CreeperConfig   cfg.CreeperConfiguration
 	WarehouseConfig cfg.WarehouseConfiguration
+	WechatConfig    WechatConfiguration
 }
 
 type JWTConfiguration struct {
 	SecretKey    string
 	OperationKey string
 	Salt         string // salt
+}
+
+type WechatConfiguration struct {
+	Appid  string
+	Secret string
 }
 
 // Global ...
@@ -54,4 +60,8 @@ func GetCreeperConfig() cfg.CreeperConfiguration {
 
 func GetWarehouseConfig() cfg.WarehouseConfiguration {
 	return conf.WarehouseConfig
+}
+
+func GetWechatConfig() WechatConfiguration {
+	return conf.WechatConfig
 }

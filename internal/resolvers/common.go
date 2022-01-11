@@ -151,11 +151,6 @@ func (q *queryResolver) HealthCheck(ctx context.Context) (string, error) {
 	return "ok", nil
 }
 
-func (q *queryResolver) UserLogin(ctx context.Context, token string, latitude int, longitude int) (*generated.AuthPayload, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (q *queryResolver) Now(ctx context.Context) (*timestamppb.Timestamp, error) {
 	return &timestamppb.Timestamp{Seconds: time.Now().Unix()}, nil
 }

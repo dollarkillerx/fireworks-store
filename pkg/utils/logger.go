@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"fmt"
 	cfg "github.com/dollarkillerx/common/pkg/config"
 	"github.com/dollarkillerx/common/pkg/logger"
 	"github.com/dollarkillerx/creeper/sdk/creeper_sdk"
+	"github.com/pkg/errors"
 
 	"log"
 )
@@ -28,4 +30,8 @@ func InitLogger(config cfg.LoggerConfig, creeperConfig cfg.CreeperConfiguration)
 		SetLogReportCaller(true).
 		Complete()
 
+}
+
+func FormatErrorStack(err error) string {
+	return fmt.Sprintf("%v", errors.WithStack(err))
 }

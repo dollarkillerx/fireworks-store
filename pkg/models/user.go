@@ -22,6 +22,8 @@ type User struct {
 	RegistryGPSLongitude int64   //  gps 纬度
 	LastGPSLatitude      int64   // 最后登陆gpc 经度
 	LastGPSLongitude     int64   // 最后登陆gpc 纬度
+	RegistryIP           string  `gorm:"type:varchar(360)"` // 用户注册时IP
+	LastIP               string  `gorm:"type:varchar(360)"` // 用户最后登录IP
 }
 
 // ShippingAddress 用户地址地址

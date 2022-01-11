@@ -1,8 +1,24 @@
 package storage
 
-import "github.com/dollarkillerx/fireworks/pkg/models"
+import (
+	"context"
+	"github.com/dollarkillerx/fireworks/pkg/models"
+)
 
 type Interface interface {
+	// ShopInterface 店铺相关信息
+	ShopInterface
+	UserAuth
+}
+
+type UserAuth interface {
+	// GetUserInfoByWechatToken 通过微信token 获取用户基础信息(如果 用不不存在就进行注册)
+	GetUserInfoByWechatToken(ctx context.Context, token string, latitude int, longitude int) (*models.User, error)
+	// GetUserInfoByID 通过id获取用户基础信息
+	GetUserInfoByID(id string) (*models.User, error)
+}
+
+type ShopInterface interface {
 	// GetShopList 获取所有店铺信息. 参数：sales 是否按评分排名查询 ,offset 分页大小, limit 分页数. 返回：total 数据总数,shops 店铺数组
 	GetShopList(sales bool, offset int, limit int) (total int, shops []models.Shop, err error)
 

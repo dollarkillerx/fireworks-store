@@ -23,6 +23,7 @@ import (
 	"github.com/dollarkillerx/fireworks/internal/storage/basis"
 	"github.com/dollarkillerx/fireworks/pkg/utils"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/websocket"
 )
 
@@ -62,6 +63,11 @@ func main() {
 	// 初始化中间件 End
 
 	router := chi.NewRouter()
+
+	router.Use(middleware.Logger)
+	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
+	router.Use(middleware.Recoverer)
 
 	router.Use(middlewares.Cors())
 	router.Use(middlewares.Context())

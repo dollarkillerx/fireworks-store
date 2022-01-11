@@ -24,8 +24,9 @@ func (c contextKey) String() string {
 
 // contextKey ...
 const (
-	tokenCtxKey             contextKey = "Token"
-	requestReceivedAtCtxKey contextKey = "ReqReceivedAt"
+	TokenCtxKey             contextKey = "Token"
+	ChiIP                   contextKey = "ChiIP"
+	RequestReceivedAtCtxKey contextKey = "ReqReceivedAt"
 )
 
 // Context  get user from jwt and put user into ctx
@@ -34,17 +35,28 @@ func Context() func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			reqID := uuid.New().String()
 			ctx := utils.SetContextRequestID(r.Context(), reqID)
-			ctx = context.WithValue(ctx, requestReceivedAtCtxKey, time.Now())
+			ctx = context.WithValue(ctx, RequestReceivedAtCtxKey, time.Now())
+			ctx = context.WithValue(ctx, ChiIP, r.RemoteAddr)
 			// token
 			tokenString, _ := getTokenFromHeader(r.Header)
 			if tokenString != "" {
-				ctx = context.WithValue(ctx, tokenCtxKey, tokenString)
+				ctx = context.WithValue(ctx, TokenCtxKey, tokenString)
 			}
 
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+func GetRequestIP(ctx context.Context) string {
+	value := ctx.Value(ChiIP)
+	r, ex := value.(string)
+	if ex {
+		return r
+	}
+
+	return ""
 }
 
 // GetUserIDFromCtx ...
@@ -90,7 +102,7 @@ func SetContextUserID(ctx context.Context, userID string) context.Context {
 
 // GetTokenFromCtx ...
 func GetTokenFromCtx(ctx context.Context) (string, error) {
-	tokenString, ok := ctx.Value(tokenCtxKey).(string)
+	tokenString, ok := ctx.Value(TokenCtxKey).(string)
 	if !ok {
 		return "", errors.New("token not found in context")
 	}
