@@ -40,10 +40,11 @@ type AuthPayload struct {
 }
 
 type BasicInfo struct {
-	NickName string   `json:"nickName"`
-	Avatar   string   `json:"avatar"`
-	Gps      []string `json:"gps"`
-	Phone    string   `json:"phone"`
+	NickName  string `json:"nickName"`
+	Avatar    string `json:"avatar"`
+	Latitude  int    `json:"latitude"`
+	Longitude int    `json:"longitude"`
+	Phone     string `json:"phone"`
 }
 
 type BigScreen struct {

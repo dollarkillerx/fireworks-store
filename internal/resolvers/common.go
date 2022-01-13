@@ -79,11 +79,6 @@ func (m *mutationResolver) HealthCheck(ctx context.Context) (string, error) {
 	return "ok", nil
 }
 
-func (m *mutationResolver) BasicRegistrationInformation(ctx context.Context, input *generated.BasicInfo) (*bool, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (m *mutationResolver) RegistrationInvitationCode(ctx context.Context, invitationCode string) (*bool, error) {
 	//TODO implement me
 	panic("implement me")

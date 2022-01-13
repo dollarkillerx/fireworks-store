@@ -2,9 +2,8 @@ package basis
 
 import (
 	"context"
-	"github.com/dollarkillerx/fireworks/internal/middlewares"
-	"strings"
 
+	"github.com/dollarkillerx/fireworks/internal/middlewares"
 	"github.com/dollarkillerx/fireworks/pkg/models"
 	"github.com/dollarkillerx/fireworks/pkg/utils"
 )
@@ -13,7 +12,7 @@ func (s *Storage) GetUserInfoByWechatToken(ctx context.Context, token string, la
 	// 1. 查询用户是否存在
 	var user models.User
 	if err := s.db.Model(&models.User{}).Where("wechat_id = ?", token).Find(&user).Error; err != nil {
-		if !strings.Contains(err.Error(), "not found") {
+		if !utils.NotFound(err) {
 			return nil, err
 		}
 
@@ -44,6 +43,30 @@ func (s *Storage) GetUserInfoByWechatToken(ctx context.Context, token string, la
 	return &user, nil
 }
 
+// GetUserInfoByID GetUserInfoByID
 func (s *Storage) GetUserInfoByID(id string) (*models.User, error) {
-	s.db.Model(&models.User{}).Where("id = ?", id)
+	var user models.User
+	if err := s.db.Model(&models.User{}).Where("id = ?", id).Find(&user).Error; err != nil {
+		if !utils.NotFound(err) {
+			utils.Logger.Errorf(utils.FormatErrorStack(err))
+		}
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// UpdateUserInfo UpdateUserInfo
+func (s *Storage) UpdateUserInfo(ctx context.Context, userID string, user models.User) error {
+	// 检测基础信息是否完备
+	if user.NickName != "" && user.Avatar != "" && user.Phone != "" {
+		user.DataCompletion = true
+	}
+
+	if err := s.db.Model(&models.User{}).Where("id = ?", userID).Updates(user).Error; err != nil {
+		utils.Logger.Errorf(utils.FormatErrorStack(err))
+		return err
+	}
+
+	return nil
 }

@@ -3,11 +3,11 @@ package middlewares
 import (
 	"context"
 	"fmt"
-	utils2 "github.com/dollarkillerx/fireworks/pkg/utils"
 	"runtime/debug"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+	utils2 "github.com/dollarkillerx/fireworks/pkg/utils"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 

@@ -8,7 +8,8 @@ extend type Query {
 input BasicInfo  {
     nickName: String! # nickName
     avatar: String!   # 头像
-    gps: [String!]!   # GPS信息  `[经度,纬度]`
+    latitude: Int! # 经度
+    longitude: Int! # 纬度
     phone: String!    # 电话号码
 }
 

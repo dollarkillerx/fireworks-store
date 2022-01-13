@@ -16,6 +16,8 @@ type UserAuth interface {
 	GetUserInfoByWechatToken(ctx context.Context, token string, latitude int, longitude int) (*models.User, error)
 	// GetUserInfoByID 通过id获取用户基础信息
 	GetUserInfoByID(id string) (*models.User, error)
+	// UpdateUserInfo 基础用户信息
+	UpdateUserInfo(ctx context.Context, userID string, user models.User) error
 }
 
 type ShopInterface interface {

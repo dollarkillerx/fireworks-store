@@ -14,6 +14,8 @@ type config struct {
 	CreeperConfig   cfg.CreeperConfiguration
 	WarehouseConfig cfg.WarehouseConfiguration
 	WechatConfig    WechatConfiguration
+
+	Test bool
 }
 
 type JWTConfiguration struct {
@@ -64,4 +66,8 @@ func GetWarehouseConfig() cfg.WarehouseConfiguration {
 
 func GetWechatConfig() WechatConfiguration {
 	return conf.WechatConfig
+}
+
+func GetIsTest() bool {
+	return conf.Test
 }

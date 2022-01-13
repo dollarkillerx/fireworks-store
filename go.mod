@@ -13,8 +13,8 @@ require (
 	github.com/dollarkillerx/creeper v0.0.1
 	github.com/dollarkillerx/urllib v1.13.16
 	github.com/dollarkillerx/warehouse v0.0.0-20220105035102-879dd4f489c7
-	github.com/dollarkillerx/wechat-mina-sdk v0.0.0-20220102123323-bb92e337f1ef // indirect
-	github.com/go-chi/chi v4.1.2+incompatible
+	github.com/dollarkillerx/wechat-mina-sdk v0.0.0-20220102123323-bb92e337f1ef
+	github.com/go-chi/chi/v5 v5.0.7
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2

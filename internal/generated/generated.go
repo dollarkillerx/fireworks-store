@@ -162,7 +162,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		BasicRegistrationInformation func(childComplexity int, input *BasicInfo) int
+		BasicRegistrationInformation func(childComplexity int, input BasicInfo) int
 		CaptchaImg                   func(childComplexity int) int
 		CaptchaPhone                 func(childComplexity int, phone string) int
 		CreateCommodity              func(childComplexity int, input CreateCommodity) int
@@ -350,7 +350,7 @@ type MutationResolver interface {
 	CaptchaImg(ctx context.Context) (*Captcha, error)
 	CaptchaPhone(ctx context.Context, phone string) (*Captcha, error)
 	PlaceOrder(ctx context.Context, commodityID []string, shippingAddressID string) (*PlaceOrder, error)
-	BasicRegistrationInformation(ctx context.Context, input *BasicInfo) (*bool, error)
+	BasicRegistrationInformation(ctx context.Context, input BasicInfo) (bool, error)
 	RegistrationInvitationCode(ctx context.Context, invitationCode string) (*bool, error)
 	CreateShippingAddress(ctx context.Context, input CreateShippingAddress) (*bool, error)
 	RemoveShippingAddress(ctx context.Context, id string) (*bool, error)
@@ -823,7 +823,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.BasicRegistrationInformation(childComplexity, args["input"].(*BasicInfo)), true
+		return e.complexity.Mutation.BasicRegistrationInformation(childComplexity, args["input"].(BasicInfo)), true
 
 	case "Mutation.captchaImg":
 		if e.complexity.Mutation.CaptchaImg == nil {
@@ -1932,7 +1932,8 @@ type TableRowItem {
 input BasicInfo  {
     nickName: String! # nickName
     avatar: String!   # 头像
-    gps: [String!]!   # GPS信息  ` + "`" + `[经度,纬度]` + "`" + `
+    latitude: Int! # 经度
+    longitude: Int! # 纬度
     phone: String!    # 电话号码
 }
 
@@ -2154,7 +2155,7 @@ type CommodityList {
 `, BuiltIn: false},
 	{Name: "internal/graphql/applets/user.graphql", Input: `extend type Mutation {
     # 注册用户基础信息
-    basicRegistrationInformation(input: BasicInfo): Boolean @hasLogined
+    basicRegistrationInformation(input: BasicInfo!): Boolean! @hasLogined
     # 用户输入邀请码
     registrationInvitationCode(invitationCode: String!): Boolean @hasLogined
 
@@ -2251,10 +2252,10 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Mutation_basicRegistrationInformation_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *BasicInfo
+	var arg0 BasicInfo
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalOBasicInfo2ᚖgithubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐBasicInfo(ctx, tmp)
+		arg0, err = ec.unmarshalNBasicInfo2githubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐBasicInfo(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -5385,7 +5386,7 @@ func (ec *executionContext) _Mutation_basicRegistrationInformation(ctx context.C
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().BasicRegistrationInformation(rctx, args["input"].(*BasicInfo))
+			return ec.resolvers.Mutation().BasicRegistrationInformation(rctx, args["input"].(BasicInfo))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.HasLogined == nil {
@@ -5401,21 +5402,24 @@ func (ec *executionContext) _Mutation_basicRegistrationInformation(ctx context.C
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*bool); ok {
+		if data, ok := tmp.(bool); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be bool`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*bool)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_registrationInvitationCode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -10600,11 +10604,19 @@ func (ec *executionContext) unmarshalInputBasicInfo(ctx context.Context, obj int
 			if err != nil {
 				return it, err
 			}
-		case "gps":
+		case "latitude":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gps"))
-			it.Gps, err = ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("latitude"))
+			it.Latitude, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "longitude":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("longitude"))
+			it.Longitude, err = ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12021,6 +12033,9 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
 
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "registrationInvitationCode":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_registrationInvitationCode(ctx, field)
@@ -14228,6 +14243,11 @@ func (ec *executionContext) marshalNAuthPayload2ᚖgithubᚗcomᚋdollarkillerx�
 	return ec._AuthPayload(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNBasicInfo2githubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐBasicInfo(ctx context.Context, v interface{}) (BasicInfo, error) {
+	res, err := ec.unmarshalInputBasicInfo(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNBigScreenItem2githubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐBigScreenItem(ctx context.Context, sel ast.SelectionSet, v BigScreenItem) graphql.Marshaler {
 	return ec._BigScreenItem(ctx, sel, &v)
 }
@@ -15470,14 +15490,6 @@ func (ec *executionContext) marshalOAuthPayload2ᚖgithubᚗcomᚋdollarkillerx�
 		return graphql.Null
 	}
 	return ec._AuthPayload(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalOBasicInfo2ᚖgithubᚗcomᚋdollarkillerxᚋfireworksᚋinternalᚋgeneratedᚐBasicInfo(ctx context.Context, v interface{}) (*BasicInfo, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputBasicInfo(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {

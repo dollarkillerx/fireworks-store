@@ -2,12 +2,12 @@ package utils
 
 import (
 	"fmt"
+	"log"
+
 	cfg "github.com/dollarkillerx/common/pkg/config"
 	"github.com/dollarkillerx/common/pkg/logger"
 	"github.com/dollarkillerx/creeper/sdk/creeper_sdk"
 	"github.com/pkg/errors"
-
-	"log"
 )
 
 var Logger *logger.RimeLogger
@@ -33,5 +33,5 @@ func InitLogger(config cfg.LoggerConfig, creeperConfig cfg.CreeperConfiguration)
 }
 
 func FormatErrorStack(err error) string {
-	return fmt.Sprintf("%v", errors.WithStack(err))
+	return fmt.Sprintf("%+v", errors.WithStack(err))
 }

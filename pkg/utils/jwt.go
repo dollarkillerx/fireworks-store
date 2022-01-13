@@ -13,3 +13,11 @@ func CreateAccessToken(ID string, secretKey string) (string, error) {
 	}
 	return jwt.CreateAccessToken(info, secretKey)
 }
+
+// CreateAccessTokenByMap ...
+func CreateAccessTokenByMap(m map[string]string, secretKey string) (string, error) {
+	info := jwt.Info{
+		Info: m,
+	}
+	return jwt.CreateAccessToken(info, secretKey)
+}

@@ -22,7 +22,7 @@ import (
 	"github.com/dollarkillerx/fireworks/internal/resolvers"
 	"github.com/dollarkillerx/fireworks/internal/storage/basis"
 	"github.com/dollarkillerx/fireworks/pkg/utils"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/websocket"
 )
@@ -86,11 +86,11 @@ func main() {
 	}
 
 	conf.Directives.HasLogined = func(ctx context.Context, obj interface{}, next graphql.Resolver) (interface{}, error) {
-		//userID, err := middlewares.GetUserIDFromCtx(ctx)
-		//if err != nil {
-		//	return nil, err
-		//}
-		//ctx = middlewares.SetContextUserID(ctx, userID)
+		userID, err := middlewares.GetUserIDFromCtx(ctx)
+		if err != nil {
+			return nil, err
+		}
+		ctx = middlewares.SetContextUserID(ctx, userID)
 		return next(ctx)
 	}
 

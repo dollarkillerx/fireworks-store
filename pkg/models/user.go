@@ -15,7 +15,7 @@ type User struct {
 	NickName             string  `gorm:"type:varchar(360)"`             // 昵称
 	Avatar               string  `gorm:"type:varchar(360)"`             // 头像
 	IB                   string  `gorm:"type:varchar(100);index"`       // 代理商ID
-	DataCompletion       bool    `json:"data_completion"`               // 是否需要资料补全
+	DataCompletion       bool    `json:"data_completion"`               // 资料是否完备
 	Integral             float64 // 积分
 	Consumption          float64 // 总消费
 	RegistryGPSLatitude  int64   //  gps 经度

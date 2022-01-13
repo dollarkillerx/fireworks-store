@@ -42,7 +42,7 @@ func (r *mutationResolver) PlaceOrder(ctx context.Context, commodityID []string,
 	panic("not implemented")
 }
 
-func (r *mutationResolver) BasicRegistrationInformation(ctx context.Context, input *BasicInfo) (*bool, error) {
+func (r *mutationResolver) BasicRegistrationInformation(ctx context.Context, input BasicInfo) (bool, error) {
 	panic("not implemented")
 }
 
